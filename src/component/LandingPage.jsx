@@ -291,21 +291,21 @@ function LandingPage() {
             Why Choose iHomes?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-200">
+            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100W">
               <h3 className="text-xl font-semibold">Easy Search</h3>
               <p className="mt-4">
                 Find the best houses and condos quickly with our easy-to-use
                 search filters.
               </p>
             </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-200">
+            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100W">
               <h3 className="text-xl font-semibold">Trusted Listings</h3>
               <p className="mt-4">
                 Browse verified and updated listings for reliable information
                 and images.
               </p>
             </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-200">
+            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100W">
               <h3 className="text-xl font-semibold">Affordable Prices</h3>
               <p className="mt-4">
                 Explore a variety of properties at different price points that
