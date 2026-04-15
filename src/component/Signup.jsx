@@ -5,6 +5,7 @@ const Signup = ({ toggleSignUpModal }) => {
     firstName: "",
     lastName: "",
     email: "",
+    role: "user",
     password: "",
     contactNumber: "",
     address: "",
@@ -22,8 +23,48 @@ const Signup = ({ toggleSignUpModal }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
-    // Add your submission logic here
+
+    // Basic validation
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.contactNumber ||
+      !formData.address
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    // Check if email already exists
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const emailExists = existingUsers.some(
+      (user) => user.email === formData.email,
+    );
+    if (emailExists) {
+      alert("An account with this email already exists.");
+      return;
+    }
+
+    // Prepare user data (exclude file for now, as localStorage can't store files directly)
+    const userData = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      role: formData.role,
+      password: formData.password, // Note: In a real app, hash the password
+      contactNumber: formData.contactNumber,
+      address: formData.address,
+      fileName: formData.file ? formData.file.name : null,
+    };
+
+    // Save to localStorage
+    existingUsers.push(userData);
+    localStorage.setItem("users", JSON.stringify(existingUsers));
+
+    alert("Signup successful!");
+    toggleSignUpModal(); // Close the modal
   };
 
   return (

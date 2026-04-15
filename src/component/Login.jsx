@@ -1,9 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import sampleData from "../data/sampleData";
 
 const Login = ({ toggleLoginModal }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous error
+    setIsLoading(true); // Start loading
+
+    // Validate inputs
+    if (!email || !password) {
+      setError("Please enter both email and password");
+      setIsLoading(false); // Stop loading on error
+      return;
+    }
+
+    // Admin login validation
+    const adminUser = sampleData.validateAdminLogin(email, password);
+
+    // Handle login for admin or regular user
+    if (adminUser) {
+      // Store admin session in localStorage
+      localStorage.setItem("adminUser", JSON.stringify(adminUser));
+      setIsLoading(false); // Stop loading
+
+      // Close modal and navigate to admin dashboard
+      toggleLoginModal();
+      navigate("/admin/dashboard");
+      return;
+    }
+
+    // Regular user login validation
+    const storedUser = JSON.parse(localStorage.getItem("users"));
+    const filteredUser = storedUser.filter(
+      (user) => user.email === email && user.password === password,
+    );
+
+    if (filteredUser.length > 0) {
+      // Regular user login successful
+      setIsLoading(false); // Stop loading
+      localStorage.setItem("loggedInUser", JSON.stringify(filteredUser[0]));
+      alert("User login successful!"); // Ideally, replace this with a more user-friendly method
+      toggleLoginModal();
+      navigate("/");
+    } else {
+      // Invalid login
+      setError("Invalid email or password");
+      setIsLoading(false); // Stop loading
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-gray-800/50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-2xl w-1/3">
+    <div className="fixed inset-0 bg-gray-800/50 flex justify-center items-center z-50 px-4">
+      <div className="bg-white p-6 rounded-2xl lg:w-1/3 w-full">
         <div className="flex justify-end">
           <button onClick={toggleLoginModal} className="text-gray-700 text-2xl">
             &times;
@@ -34,18 +89,40 @@ const Login = ({ toggleLoginModal }) => {
             </a>
           </div>
         </div>
-        <div className="text-md mt-2 text-gray-700 font-semibold mb-4 text-center">
-          Login to Your Account
-        </div>
-        <form className="p-4">
+        {/* <div className="text-md mt-2 text-gray-700 font-semibold mb-4 text-center">
+          Admin Login
+        </div> */}
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded border border-red-300">
+            {error}
+          </div>
+        )}
+
+        {/* Sample Credentials Info
+        <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded border border-blue-200 text-sm">
+          <p className="font-semibold mb-2">Demo Admin Credentials:</p>
+          <p>
+            📧 Email: <strong>admin@ihomes.com</strong>
+          </p>
+          <p>
+            🔑 Password: <strong>admin123</strong>
+          </p>
+        </div> */}
+
+        <form className="p-4" onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
               type="email"
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-2 border border-gray-300 rounded text-gray-700"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <div className="mb-4">
@@ -54,15 +131,19 @@ const Login = ({ toggleLoginModal }) => {
             </label>
             <input
               type="password"
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full p-2 border border-gray-300 rounded text-gray-700"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+            disabled={isLoading}
           >
-            Continue
+            {isLoading ? "Logging in..." : "Continue"}
           </button>
         </form>
       </div>

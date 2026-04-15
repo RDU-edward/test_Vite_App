@@ -7,25 +7,13 @@ import Signup from "./Signup";
 import sampleData from "../data/sampleData";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
+import Navbar from "./Navbar";
 
 function LandingPage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navigate = useNavigate();
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const toggleSignUpModal = () => {
-    setIsSignUpModalOpen(!isSignUpModalOpen);
-  };
-
-  const toggleLoginModal = () => {
-    setIsLoginModalOpen(!isLoginModalOpen);
-  };
 
   const handleHouseClick = (id) => {
     //Navigate to the house details page with the selected house ID
@@ -39,7 +27,6 @@ function LandingPage() {
   };
 
   const images = [bgimgage, condo1, house1];
-  console.log(images);
 
   // State to track the current background image index
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -56,119 +43,30 @@ function LandingPage() {
     return () => clearInterval(interval);
   }, [images.length]);
 
-  console.log(currentImageIndex);
+  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+  const handleViewAllHouses = () => {
+    if (loggedInUser) {
+      navigate(`/viewAllHouses`);
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
+  const handleViewAllCondos = () => {
+    if (loggedInUser) {
+      navigate(`/viewAllCondos`);
+    } else {
+      setIsLoginModalOpen(true);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 ">
       {/* Navbar */}
-      <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          {/* Logo */}
-          <div className="text-2xl font-semibold text-gray-900 flex items-center">
-            <a href="/" className="hover:text-blue-500 flex items-center">
-              <span className="mr-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-                  />
-                </svg>
-              </span>
-              iHomes
-            </a>
-          </div>
-
-          {/* Search Bar for Desktop */}
-          <div className="hidden md:flex w-1/3 items-center bg-gray-100 rounded-full px-4 py-2">
-            <input
-              type="text"
-              placeholder="Search for houses, condos, etc."
-              className="w-full bg-transparent outline-none text-gray-700 placeholder-gray-500"
-            />
-          </div>
-
-          {/* Hamburger Icon for Mobile */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={toggleMenu}
-              className="text-gray-900 hover:text-blue-500"
-            >
-              {/* Hamburger icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6">
-            <a
-              href="#signup"
-              className="text-gray-700 hover:text-blue-500"
-              onClick={toggleSignUpModal}
-            >
-              Sign Up
-            </a>
-            <a
-              href="#login"
-              className="text-gray-700 hover:text-blue-500"
-              onClick={toggleLoginModal}
-            >
-              Log In
-            </a>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Links (Hamburger Menu) */}
-        <div
-          className={`md:hidden ${isMenuOpen ? "block" : "hidden"} bg-white shadow-lg absolute top-0 left-0 right-0 px-6 py-4`}
-        >
-          {/* Close Button (X) */}
-          <div className="flex justify-end">
-            <button onClick={toggleMenu} className="text-gray-700 text-2xl">
-              &times; {/* "X" symbol to close */}
-            </button>
-          </div>
-
-          {/* Menu Links */}
-
-          <a href="#signup" className="block text-gray-700 py-2">
-            Sign Up
-          </a>
-          <a
-            href="#login"
-            className="block text-gray-700 py-2"
-            onClick={toggleLoginModal}
-          >
-            Log In
-          </a>
-        </div>
-
-        {/* Sign Up Modal */}
-        {isSignUpModalOpen && <Signup toggleSignUpModal={toggleSignUpModal} />}
-
-        {/* Log In Modal */}
-        {isLoginModalOpen && <Login toggleLoginModal={toggleLoginModal} />}
-      </nav>
+      <Navbar
+        isLoginModalOpen={isLoginModalOpen}
+        setIsLoginModalOpen={setIsLoginModalOpen}
+      />
 
       {/* Hero Section */}
       <section
@@ -230,7 +128,7 @@ function LandingPage() {
         </div>
         <button
           className="border border-gray-700 text-black p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700 hover:text-white transition duration-300"
-          onClick={() => navigate(`/viewAllHouses`)}
+          onClick={handleViewAllHouses}
         >
           View More
         </button>
@@ -278,7 +176,7 @@ function LandingPage() {
         </div>
         <button
           className="border border-gray-700 text-black p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700 hover:text-white transition duration-300"
-          onClick={() => navigate(`/viewAllCondos`)}
+          onClick={handleViewAllCondos}
         >
           View More
         </button>
@@ -291,21 +189,21 @@ function LandingPage() {
             Why Choose iHomes?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100W">
+            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100">
               <h3 className="text-xl font-semibold">Easy Search</h3>
               <p className="mt-4">
                 Find the best houses and condos quickly with our easy-to-use
                 search filters.
               </p>
             </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100W">
+            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100">
               <h3 className="text-xl font-semibold">Trusted Listings</h3>
               <p className="mt-4">
                 Browse verified and updated listings for reliable information
                 and images.
               </p>
             </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100W">
+            <div className="text-center p-4 bg-white rounded-lg shadow-md cursor-pointer border border-gray-400 hover:bg-gray-100">
               <h3 className="text-xl font-semibold">Affordable Prices</h3>
               <p className="mt-4">
                 Explore a variety of properties at different price points that
