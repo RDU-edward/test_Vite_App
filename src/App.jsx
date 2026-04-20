@@ -12,6 +12,7 @@ import ViewAllHouses from "./pages/ViewAllHouses";
 import ViewAllCondos from "./pages/ViewAllCondos";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import AdminMainDashboard from "./pages/AdminMainDashboard";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/viewAllCondos" element={<ViewAllCondos />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/user/dashboard" element={<UserDashboard />} />
+        <Route path="/admin/dashboard_main" element={<AdminMainDashboard />} />
       </Routes>
     </Router>
   );

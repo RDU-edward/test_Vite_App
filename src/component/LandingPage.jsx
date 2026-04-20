@@ -45,6 +45,8 @@ function LandingPage() {
 
   const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
+  const toggleLoginModal = () => setIsLoginModalOpen(!isLoginModalOpen);
+
   const handleViewAllHouses = () => {
     if (loggedInUser) {
       navigate(`/viewAllHouses`);
@@ -59,14 +61,12 @@ function LandingPage() {
       setIsLoginModalOpen(true);
     }
   };
+  console.log(loggedInUser);
 
   return (
     <div className="min-h-screen bg-gray-50 ">
       {/* Navbar */}
-      <Navbar
-        isLoginModalOpen={isLoginModalOpen}
-        setIsLoginModalOpen={setIsLoginModalOpen}
-      />
+      <Navbar />
 
       {/* Hero Section */}
       <section
@@ -216,6 +216,9 @@ function LandingPage() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Log In Modal */}
+      {isLoginModalOpen && <Login toggleLoginModal={toggleLoginModal} />}
     </div>
   );
 }

@@ -2,11 +2,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Signup from "./Signup";
 import Login from "./Login";
+import { FiMessageSquare } from "react-icons/fi";
+import { IoIosLogOut } from "react-icons/io";
+import { FaRegBell } from "react-icons/fa";
+import { MdDashboard, MdOutlineDashboard } from "react-icons/md";
 
-const Navbar = ({ isLoginModalOpen, setIsLoginModalOpen }) => {
+const Navbar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -22,8 +27,18 @@ const Navbar = ({ isLoginModalOpen, setIsLoginModalOpen }) => {
     navigate("/"); // redirect to home or login
   };
 
+  console.log(loggedInUser);
+  const goToDashboard = () => {
+    if (loggedInUser?.role === "admin") {
+      navigate("admin/dashboard");
+    } else {
+      navigate("user/dashboard");
+    }
+  };
+  // console.log(location.pathname);
+
   return (
-    <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-white shadow-md z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         {/* Logo */}
         <div className="text-2xl font-semibold text-gray-900 flex items-center">
@@ -59,41 +74,63 @@ const Navbar = ({ isLoginModalOpen, setIsLoginModalOpen }) => {
 
         {/* Desktop Navigation or User */}
         {loggedInUser ? (
-          <div className="relative">
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              <span className="sr-only">Open user menu</span>
-              <div className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-medium">
-                {loggedInUser.firstName[0]}
-                {loggedInUser.lastName[0]}
-              </div>
-            </button>
-            {showDropdown && (
-              <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1 px-1">
-                  <div className="px-4 py-2 text-sm text-gray-700 border-b">
-                    <div className="font-medium">
-                      {loggedInUser.firstName} {loggedInUser.lastName}
-                    </div>
-                    <div className="text-gray-500">{loggedInUser.email}</div>
-                  </div>
-                  <button
-                    onClick={() => navigate("/user/dashboard")}
-                    className="block px-4 py-2 text-sm bg-blue-600 rounded-md mt-2 text-white hover:bg-blue-700 w-full text-left"
-                  >
-                    View Dashboard
-                  </button>
-                  <button
-                    onClick={handleLogout}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                  >
-                    Sign out
-                  </button>
+          <div className="flex items-center gap-4">
+            {/* Message Icon */}
+            <div className="relative">
+              <MdOutlineDashboard className="text-xl" onClick={goToDashboard} />
+            </div>{" "}
+            <div className="relative">
+              <FiMessageSquare className="text-xl" />
+
+              {/* Ping Dot */}
+              <span className="absolute -top-1 -right-1 flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                <span className="relative inline-flex size-3 rounded-full bg-sky-500"></span>
+              </span>
+            </div>{" "}
+            {/* Bell Icon */}
+            <div className="relative">
+              <FaRegBell className="text-xl" />
+
+              {/* Ping Dot */}
+              <span className="absolute -top-1 -right-1 flex size-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
+              </span>
+            </div>
+            <div>Hello, {loggedInUser.firstName}</div>
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <span className="sr-only">Open user menu</span>
+                <div className="h-8 w-8 rounded-full border flex items-center justify-center  font-medium">
+                  {loggedInUser.firstName[0]}
+                  {loggedInUser.email[0]}
                 </div>
-              </div>
-            )}
+              </button>
+              {showDropdown && (
+                <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                  <div className="py-1">
+                    <div className="px-4 py-2 text-sm text-gray-700 border-b">
+                      <div className="font-medium">
+                        {loggedInUser.firstname}
+                      </div>
+                      <div className="text-gray-500">{loggedInUser.email}</div>
+                    </div>
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full p-4 text-sm text-gray-700 cursor-pointer hover:text-blue-400 hover:font-medium hover:bg-gray-100"
+                    >
+                      <span>Sign out</span>
+                      <IoIosLogOut className="ml-2 text-xl hover:text-blue-400 hover:font-medium" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="hidden md:flex items-center space-x-6">

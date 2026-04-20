@@ -28,11 +28,16 @@ const Login = ({ toggleLoginModal }) => {
     if (adminUser) {
       // Store admin session in localStorage
       localStorage.setItem("adminUser", JSON.stringify(adminUser));
+      localStorage.setItem(
+        "loggedInUser",
+        JSON.stringify({ ...adminUser, firstName: adminUser.name }),
+      );
+
       setIsLoading(false); // Stop loading
 
       // Close modal and navigate to admin dashboard
       toggleLoginModal();
-      navigate("/admin/dashboard");
+      navigate("/");
       return;
     }
 
