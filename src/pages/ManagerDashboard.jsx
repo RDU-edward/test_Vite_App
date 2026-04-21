@@ -7,28 +7,20 @@ import { FiMessageSquare } from "react-icons/fi";
 import { IoIosArrowBack, IoIosArrowForward, IoIosLogOut } from "react-icons/io";
 import Pagination from "../component/Pagination";
 
-function AdminDashboard() {
+function ManagerDashboard() {
   const [reservations, setReservations] = useState(
     sampleData.getSampleReservations(),
   );
+
   const [activeTab, setActiveTab] = useState("pending");
   const [expandedReservation, setExpandedReservation] = useState(null);
-  const [adminUser, setAdminUser] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const reservationsPerPage = 1;
+  const reservationsPerPage = 2;
 
-  // Check if admin is logged in
-  useEffect(() => {
-    const storedUser = localStorage.getItem("adminUser");
-    if (!storedUser) {
-      navigate("/");
-    } else {
-      setAdminUser(JSON.parse(storedUser));
-    }
-  }, [navigate]);
+  const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
   // Filter reservations by status
   const getFilteredReservations = () => {
@@ -66,7 +58,7 @@ function AdminDashboard() {
   // Logout
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.removeItem("adminUser");
+      localStorage.removeItem("loggedInUser");
       navigate("/");
     }
   };
@@ -115,16 +107,16 @@ function AdminDashboard() {
   //   pageNumbers.push(i);
   // }
 
-  if (!adminUser) {
+  if (!loggedUser) {
     return null;
   }
 
-  console.log(adminUser);
+  console.log(loggedUser);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navbar */}
-      <nav className="bg-white shadow-sm mb-8">
+      <nav className="bg-white shadow-sm mb-8 text-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="text-2xl font-semibold text-gray-900 flex items-center">
@@ -150,6 +142,12 @@ function AdminDashboard() {
             </div>
 
             <div className="flex items-center gap-4">
+              <button
+                className="px-6 border py-2 rounded-4xl text-white bg-blue-500 font-medium cursor-pointer hover:bg-blue-700"
+                onClick={() => navigate("/manager/property_list")}
+              >
+                View Properties
+              </button>
               {/* Message Icon */}
               <div className="relative">
                 <FiMessageSquare className="text-xl" />
@@ -170,7 +168,7 @@ function AdminDashboard() {
                   <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
                 </span>
               </div>
-              <div>Hello, {adminUser.name}</div>
+              <div>Hello, {loggedUser.firstName}</div>
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -178,16 +176,18 @@ function AdminDashboard() {
                 >
                   <span className="sr-only">Open user menu</span>
                   <div className="h-8 w-8 rounded-full border flex items-center justify-center  font-medium">
-                    {adminUser.name[0]}
-                    {adminUser.email[0]}
+                    {loggedUser.firstName[0]}
+                    {loggedUser.email[0]}
                   </div>
                 </button>
                 {showDropdown && (
                   <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                     <div className="py-1">
                       <div className="px-4 py-2 text-sm text-gray-700 border-b">
-                        <div className="font-medium">{adminUser.name}</div>
-                        <div className="text-gray-500">{adminUser.email}</div>
+                        <div className="font-medium">
+                          {loggedUser.firstName}
+                        </div>
+                        <div className="text-gray-500">{loggedUser.email}</div>
                       </div>
                       <button
                         onClick={handleLogout}
@@ -260,7 +260,7 @@ function AdminDashboard() {
 
         <section className="flex-1">
           {/* Reservations List */}
-          <div className="max-w-7xl mx-auto ">
+          <div className="max-w-7xl mx-auto  ">
             {paginatedData.length > 0 ? (
               <div className="space-y-4 mb-12 ">
                 {paginatedData.map((reservation) => (
@@ -475,4 +475,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default ManagerDashboard;

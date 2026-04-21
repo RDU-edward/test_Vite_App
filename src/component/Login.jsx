@@ -37,7 +37,7 @@ const Login = ({ toggleLoginModal }) => {
 
       // Close modal and navigate to admin dashboard
       toggleLoginModal();
-      navigate("/");
+      navigate("/admin/dashboard_main");
       return;
     }
 
@@ -47,13 +47,21 @@ const Login = ({ toggleLoginModal }) => {
       (user) => user.email === email && user.password === password,
     );
 
+    console.log(filteredUser);
+
     if (filteredUser.length > 0) {
       // Regular user login successful
       setIsLoading(false); // Stop loading
       localStorage.setItem("loggedInUser", JSON.stringify(filteredUser[0]));
       alert("User login successful!"); // Ideally, replace this with a more user-friendly method
       toggleLoginModal();
-      navigate("/");
+      console.log(filteredUser[0]?.role);
+
+      if (filteredUser[0]?.role === "manager") {
+        navigate("/manager/dashboard");
+      } else {
+        navigate("/");
+      }
     } else {
       // Invalid login
       setError("Invalid email or password");
@@ -145,7 +153,7 @@ const Login = ({ toggleLoginModal }) => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+            className="w-full bg-blue-500 p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
             disabled={isLoading}
           >
             {isLoading ? "Logging in..." : "Continue"}

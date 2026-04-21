@@ -30,7 +30,7 @@ const ViewAllHouses = () => {
       <Navbar />
       <main className="flex-1 flex flex-col">
         <section className="p-12 flex-1 ">
-          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 text-gray-700">
             {paginatedData.map((house) => (
               <div key={house.id}>
                 <img

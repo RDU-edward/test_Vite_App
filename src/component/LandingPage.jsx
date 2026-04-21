@@ -61,7 +61,6 @@ function LandingPage() {
       setIsLoginModalOpen(true);
     }
   };
-  console.log(loggedInUser);
 
   return (
     <div className="min-h-screen bg-gray-50 ">
@@ -76,7 +75,7 @@ function LandingPage() {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center text-white pt-20">
+        <div className="relative z-10 text-center pt-20">
           <h1 className="text-5xl font-bold mb-4">Find Your Dream Home</h1>
           <p className="text-lg mb-8">
             Explore a wide range of houses and condos available for rent or
@@ -127,7 +126,7 @@ function LandingPage() {
             ))}
         </div>
         <button
-          className="border border-gray-700 text-black p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700 hover:text-white transition duration-300"
+          className="border border-gray-700  p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700  transition duration-300"
           onClick={handleViewAllHouses}
         >
           View More
@@ -175,7 +174,7 @@ function LandingPage() {
             ))}
         </div>
         <button
-          className="border border-gray-700 text-black p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700 hover:text-white transition duration-300"
+          className="border border-gray-700 p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700  transition duration-300"
           onClick={handleViewAllCondos}
         >
           View More

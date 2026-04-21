@@ -20,7 +20,7 @@ const Pagination = ({ currentPage, setCurrentPage, data, totalPerPage }) => {
 
   return (
     <section>
-      <div className="flex justify-center mt-8 mb-4">
+      <div className="flex justify-center mt-8 mb-4 text-gray-700">
         <button
           onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage === 1}
@@ -33,10 +33,7 @@ const Pagination = ({ currentPage, setCurrentPage, data, totalPerPage }) => {
         {/* Page Number Buttons */}
         {currentPage > 3 && (
           <>
-            <button
-              onClick={() => goToPage(1)}
-              className="px-4 py-2 text-black"
-            >
+            <button onClick={() => goToPage(1)} className="px-4 py-2 ">
               1
             </button>
             <span className="text-lg">...</span>
@@ -50,7 +47,7 @@ const Pagination = ({ currentPage, setCurrentPage, data, totalPerPage }) => {
                 key={page}
                 onClick={() => goToPage(page)}
                 className={`px-4 py-2 rounded-lg ${
-                  currentPage === page ? " text-black font-bold" : "text-black"
+                  currentPage === page ? " font-bold" : ""
                 }`}
               >
                 {page}
@@ -63,10 +60,7 @@ const Pagination = ({ currentPage, setCurrentPage, data, totalPerPage }) => {
         {currentPage < totalPages - 2 && (
           <>
             <span className="text-lg">...</span>
-            <button
-              onClick={() => goToPage(totalPages)}
-              className="px-4 py-2 text-black"
-            >
+            <button onClick={() => goToPage(totalPages)} className="px-4 py-2">
               {totalPages}
             </button>
           </>

@@ -27,15 +27,13 @@ const Navbar = () => {
     navigate("/"); // redirect to home or login
   };
 
-  console.log(loggedInUser);
   const goToDashboard = () => {
     if (loggedInUser?.role === "admin") {
-      navigate("admin/dashboard");
+      navigate("/admin/dashboard_main");
     } else {
-      navigate("user/dashboard");
+      navigate("/user/dashboard");
     }
   };
-  // console.log(location.pathname);
 
   return (
     <nav className="bg-white shadow-md z-50">
@@ -74,7 +72,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation or User */}
         {loggedInUser ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center text-gray-700 gap-4">
             {/* Message Icon */}
             <div className="relative">
               <MdOutlineDashboard className="text-xl" onClick={goToDashboard} />
@@ -142,7 +140,7 @@ const Navbar = () => {
             </button>
             <button
               onClick={toggleLoginModal}
-              className="text-gray-700 border border-gray-700 px-3 py-1 rounded hover:bg-gray-700 hover:text-white transition duration-300"
+              className="text-gray-700 border border-gray-700 px-3 py-1 rounded hover:bg-gray-700  transition duration-300"
             >
               Log In
             </button>

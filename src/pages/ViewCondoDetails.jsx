@@ -88,7 +88,7 @@ const ViewCondoDetails = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-500 text-white p-4 rounded-xl cursor-pointer hover:bg-blue-600 transition duration-300"
+                  className="w-full bg-blue-500  p-4 rounded-xl cursor-pointer hover:bg-blue-600 transition duration-300"
                 >
                   Reserve
                 </button>

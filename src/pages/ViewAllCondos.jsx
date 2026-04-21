@@ -25,7 +25,7 @@ const ViewAllCondos = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col text-gray-700">
       <Navbar />
       <main className="flex-1 flex flex-col">
         <section className="p-12 flex-1 ">

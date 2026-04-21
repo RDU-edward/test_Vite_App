@@ -1,15 +1,17 @@
 import React, { useState } from "react";
+import { FaCheckCircle } from "react-icons/fa";
 
 const Signup = ({ toggleSignUpModal }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    role: "user",
+    role: "",
     password: "",
     contactNumber: "",
     address: "",
     file: null,
+    status: "",
   });
 
   const handleInputChange = (e) => {
@@ -29,6 +31,7 @@ const Signup = ({ toggleSignUpModal }) => {
       !formData.firstName ||
       !formData.lastName ||
       !formData.email ||
+      !formData.role ||
       !formData.password ||
       !formData.contactNumber ||
       !formData.address
@@ -57,6 +60,7 @@ const Signup = ({ toggleSignUpModal }) => {
       contactNumber: formData.contactNumber,
       address: formData.address,
       fileName: formData.file ? formData.file.name : null,
+      status: formData.role === "manager" ? "Pending" : "Active",
     };
 
     // Save to localStorage
@@ -66,6 +70,8 @@ const Signup = ({ toggleSignUpModal }) => {
     alert("Signup successful!");
     toggleSignUpModal(); // Close the modal
   };
+
+  // console.log(formData.role);
 
   return (
     <div className="fixed inset-0 bg-gray-800/50 flex justify-center items-center z-50">
@@ -201,10 +207,46 @@ const Signup = ({ toggleSignUpModal }) => {
               rows="3"
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded"
-          >
+          <div className="flex space-x-2 mb-2">
+            <label
+              className="relative flex items-center text-sm w-28 text-gray-700 border justify-center rounded-md cursor-pointer hover:bg-blue-200 transition-all p-2"
+              htmlFor="role-manager"
+            >
+              <input
+                type="checkbox"
+                id="role-manager"
+                name="role"
+                className="hidden"
+                value="manager"
+                onChange={handleInputChange}
+                checked={formData.role === "manager"}
+              />
+              <span className="font-semibold">Manager</span>
+              {formData.role === "manager" && (
+                <FaCheckCircle className="text-green-700 absolute top-1 right-1" />
+              )}
+            </label>
+
+            <label
+              className="relative flex items-center text-sm w-28 text-gray-700 border justify-center rounded-md cursor-pointer hover:bg-blue-200 transition-all p-2"
+              htmlFor="role-tenant"
+            >
+              <input
+                type="checkbox"
+                id="role-tenant"
+                name="role"
+                className="hidden"
+                value="tenant"
+                onChange={handleInputChange}
+                checked={formData.role === "tenant"}
+              />
+              <span>Tenant</span>
+              {formData.role === "tenant" && (
+                <FaCheckCircle className="text-green-700 absolute top-1 right-1" />
+              )}
+            </label>
+          </div>
+          <button type="submit" className="w-full bg-blue-500 p-2 rounded">
             Sign Up
           </button>
         </form>
