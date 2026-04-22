@@ -1,17 +1,19 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { FaCircleXmark } from "react-icons/fa6";
 
 const TestProperty = ({ properties, setProperties, setShowForm }) => {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
+    manager_id: 1,
+    property_title: "",
     address: "",
-    type: "",
-    monthlyPrice: "",
+    property_type: "",
+    monthly_price: "",
     bedrooms: "",
     bathrooms: "",
-    availability: "available",
-    images: [],
+    description: "",
+    availability: "",
+    files: [],
   });
 
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -20,7 +22,7 @@ const TestProperty = ({ properties, setProperties, setShowForm }) => {
     const newFiles = Array.from(files);
     setFormData((prev) => ({
       ...prev,
-      images: [...prev.images, ...newFiles],
+      files: [...prev.files, ...newFiles],
     }));
     const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
     setImagePreviews((prev) => [...prev, ...newPreviews]);
@@ -30,7 +32,7 @@ const TestProperty = ({ properties, setProperties, setShowForm }) => {
     const { name, value, files } = e.target;
     if (files) {
       handleFiles(files);
-    } else if (name === "monthlyPrice") {
+    } else if (name === "monthly_price") {
       // Only allow numbers
       const validValue = value.replace(/[^0-9.]/g, "");
       setFormData({ ...formData, [name]: validValue });
@@ -56,31 +58,73 @@ const TestProperty = ({ properties, setProperties, setShowForm }) => {
   const removeImage = (index) => {
     setFormData((prev) => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index),
+      files: prev.files.filter((_, i) => i !== index),
     }));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Add new property to list
-    setProperties([...properties, formData]);
-
-    // Reset form
-    setFormData({
-      title: "",
-      description: "",
-      address: "",
-      type: "",
-      monthlyPrice: "",
-      bedrooms: "",
-      bathrooms: "",
-      availability: "available",
-      images: [],
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+      if (key !== "files") {
+        formDataToSend.append(key, formData[key]);
+      }
     });
-    setImagePreviews([]);
-    setShowForm(false);
+
+    console.log(formData.files);
+
+    formData.files.forEach((file) => {
+      formDataToSend.append("files", file);
+    });
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/property/add_property",
+        formDataToSend,
+      );
+
+      if (response.data.success === true) {
+        alert(response.data.message);
+        // Reset form
+        setFormData({
+          manager_id: "",
+          property_title: "",
+          address: "",
+          property_type: "",
+          monthly_price: "",
+          bedrooms: "",
+          bathrooms: "",
+          description: "",
+          availability: "",
+          files: [],
+        });
+        setImagePreviews([]);
+        setShowForm(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    // Add new property to list
+    // setProperties([...properties, formData]);
+
+    // // Reset form
+    // setFormData({
+    //   manager_id: "",
+    //   property_title: "",
+    //   address: "",
+    //   property_type: "",
+    //   monthly_price: "",
+    //   bedrooms: "",
+    //   bathrooms: "",
+    //   description: "",
+    //   availability: "",
+    //   files: [],
+    // });
+    // setImagePreviews([]);
+    // setShowForm(false);
   };
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-6 mb-4">
@@ -99,8 +143,8 @@ const TestProperty = ({ properties, setProperties, setShowForm }) => {
           <label className="block font-medium">Property Title</label>
           <input
             type="text"
-            name="title"
-            value={formData.title}
+            name="property_title"
+            value={formData.property_title}
             onChange={handleChange}
             className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
@@ -123,8 +167,8 @@ const TestProperty = ({ properties, setProperties, setShowForm }) => {
           <div>
             <label className="block font-medium">Property Type</label>
             <select
-              name="type"
-              value={formData.type}
+              name="property_type"
+              value={formData.property_type}
               onChange={handleChange}
               className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
@@ -141,8 +185,8 @@ const TestProperty = ({ properties, setProperties, setShowForm }) => {
             <label className="block font-medium">Monthly Price ($)</label>
             <input
               type="text"
-              name="monthlyPrice"
-              value={formData.monthlyPrice}
+              name="monthly_price"
+              value={formData.monthly_price}
               onChange={handleChange}
               className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="e.g., 1200"
@@ -230,6 +274,7 @@ const TestProperty = ({ properties, setProperties, setShowForm }) => {
           <input
             type="file"
             id="fileInput"
+            name="files"
             multiple
             accept="image/*"
             onChange={handleChange}

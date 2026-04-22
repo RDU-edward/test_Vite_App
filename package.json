@@ -15,7 +15,7 @@
     "@fortawesome/react-fontawesome": "^3.3.0",
     "@hello-pangea/dnd": "^18.0.1",
     "@tailwindcss/vite": "^4.2.2",
-    "axios": "^1.13.6",
+    "axios": "^1.15.2",
     "file-saver": "^2.0.5",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

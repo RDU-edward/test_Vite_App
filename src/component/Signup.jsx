@@ -3,15 +3,14 @@ import { FaCheckCircle } from "react-icons/fa";
 
 const Signup = ({ toggleSignUpModal }) => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    firstname: "",
+    lastname: "",
     email: "",
     role: "",
     password: "",
-    contactNumber: "",
+    contact_number: "",
     address: "",
-    file: null,
-    status: "",
+    files: [],
   });
 
   const handleInputChange = (e) => {
@@ -19,59 +18,93 @@ const Signup = ({ toggleSignUpModal }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // Handle file changes
   const handleFileChange = (e) => {
-    setFormData({ ...formData, file: e.target.files[0] });
+    setFormData({ ...formData, files: [...e.target.files] }); // Update the files state with the selected files
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
 
-    // Basic validation
-    if (
-      !formData.firstName ||
-      !formData.lastName ||
-      !formData.email ||
-      !formData.role ||
-      !formData.password ||
-      !formData.contactNumber ||
-      !formData.address
-    ) {
-      alert("Please fill in all required fields.");
-      return;
-    }
+  //   // Basic validation
+  //   if (
+  //     !formData.firstname ||
+  //     !formData.lastname ||
+  //     !formData.email ||
+  //     !formData.role ||
+  //     !formData.password ||
+  //     !formData.contact_number ||
+  //     !formData.address
+  //   ) {
+  //     alert("Please fill in all required fields.");
+  //     return;
+  //   }
 
-    // Check if email already exists
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const emailExists = existingUsers.some(
-      (user) => user.email === formData.email,
-    );
-    if (emailExists) {
-      alert("An account with this email already exists.");
-      return;
-    }
+  //   // Check if email already exists
+  //   const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+  //   const emailExists = existingUsers.some(
+  //     (user) => user.email === formData.email,
+  //   );
+  //   if (emailExists) {
+  //     alert("An account with this email already exists.");
+  //     return;
+  //   }
 
-    // Prepare user data (exclude file for now, as localStorage can't store files directly)
-    const userData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      role: formData.role,
-      password: formData.password, // Note: In a real app, hash the password
-      contactNumber: formData.contactNumber,
-      address: formData.address,
-      fileName: formData.file ? formData.file.name : null,
-      status: formData.role === "manager" ? "Pending" : "Active",
-    };
+  //   // Prepare user data (exclude file for now, as localStorage can't store files directly)
+  //   const userData = {
+  //     firstname: formData.firstname,
+  //     lastname: formData.lastname,
+  //     email: formData.email,
+  //     role: formData.role,
+  //     password: formData.password, // Note: In a real app, hash the password
+  //     contact_number: formData.contact_number,
+  //     address: formData.address,
+  //     fileName: formData.file ? formData.file.name : null,
+  //     status: formData.role === "manager" ? "Pending" : "Active",
+  //   };
 
-    // Save to localStorage
-    existingUsers.push(userData);
-    localStorage.setItem("users", JSON.stringify(existingUsers));
+  //   // Save to localStorage
+  //   existingUsers.push(userData);
+  //   localStorage.setItem("users", JSON.stringify(existingUsers));
 
-    alert("Signup successful!");
-    toggleSignUpModal(); // Close the modal
-  };
+  //   alert("Signup successful!");
+  //   toggleSignUpModal(); // Close the modal
+  // };
 
   // console.log(formData.role);
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+      if (key !== "files") {
+        formDataToSend.append(key, formData[key]);
+      }
+    });
+
+    // Append each file to the FormData
+    formData.files.forEach((file) => {
+      formDataToSend.append("files", file); // 'files' is the name used for the input field
+    });
+
+    try {
+      const response = await fetch("http://localhost:3000/api/user/create", {
+        method: "POST",
+        body: formDataToSend,
+      });
+      const result = await response.json();
+      if (result.success === true) {
+        alert(result.message);
+        toggleSignUpModal();
+      } else {
+        alert("Error Occurred");
+      }
+    } catch (err) {
+      console.error("Error uploading files:", err);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-800/50 flex justify-center items-center z-50">
@@ -112,7 +145,11 @@ const Signup = ({ toggleSignUpModal }) => {
         <h2 className="text-md text-gray-700 font-semibold mb-4 text-center">
           Sign Up
         </h2>
-        <form onSubmit={handleSubmit} className="text-gray-800">
+        <form
+          onSubmit={handleSubmit}
+          encType="multipart/form-data"
+          className="text-gray-800"
+        >
           <div className="flex gap-4">
             <div className="mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700">
@@ -120,11 +157,12 @@ const Signup = ({ toggleSignUpModal }) => {
               </label>
               <input
                 type="text"
-                name="firstName"
-                value={formData.firstName}
+                name="firstname"
+                value={formData.firstname}
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your first name"
+                required
               />
             </div>
             <div className="mb-4 flex-1">
@@ -133,11 +171,12 @@ const Signup = ({ toggleSignUpModal }) => {
               </label>
               <input
                 type="text"
-                name="lastName"
-                value={formData.lastName}
+                name="lastname"
+                value={formData.lastname}
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your last name"
+                required
               />
             </div>
           </div>
@@ -153,6 +192,7 @@ const Signup = ({ toggleSignUpModal }) => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your email"
+                required
               />
             </div>
             <div className="mb-4 flex-1">
@@ -166,6 +206,7 @@ const Signup = ({ toggleSignUpModal }) => {
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your password"
+                required
               />
             </div>
           </div>
@@ -176,11 +217,12 @@ const Signup = ({ toggleSignUpModal }) => {
               </label>
               <input
                 type="tel"
-                name="contactNumber"
-                value={formData.contactNumber}
+                name="contact_number"
+                value={formData.contact_number}
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your contact number"
+                required
               />
             </div>
             <div className="mb-4 flex-1">
@@ -189,6 +231,7 @@ const Signup = ({ toggleSignUpModal }) => {
               </label>
               <input
                 type="file"
+                name="files"
                 onChange={handleFileChange}
                 className="w-full p-2 border border-gray-300 rounded"
               />

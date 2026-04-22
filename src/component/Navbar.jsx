@@ -96,7 +96,7 @@ const Navbar = () => {
                 <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
               </span>
             </div>
-            <div>Hello, {loggedInUser.firstName}</div>
+            <div>Hello, {loggedInUser.firstname}</div>
             <div className="relative">
               <button
                 onClick={() => setShowDropdown(!showDropdown)}
@@ -104,8 +104,8 @@ const Navbar = () => {
               >
                 <span className="sr-only">Open user menu</span>
                 <div className="h-8 w-8 rounded-full border flex items-center justify-center  font-medium">
-                  {loggedInUser.firstName[0]}
-                  {loggedInUser.email[0]}
+                  {loggedInUser.firstname[0]}
+                  {loggedInUser.lastname[0]}
                 </div>
               </button>
               {showDropdown && (

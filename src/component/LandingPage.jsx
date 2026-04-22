@@ -75,7 +75,7 @@ function LandingPage() {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center pt-20">
+        <div className="relative z-10 text-center pt-20 text-white">
           <h1 className="text-5xl font-bold mb-4">Find Your Dream Home</h1>
           <p className="text-lg mb-8">
             Explore a wide range of houses and condos available for rent or

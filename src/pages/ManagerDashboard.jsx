@@ -168,7 +168,7 @@ function ManagerDashboard() {
                   <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
                 </span>
               </div>
-              <div>Hello, {loggedUser.firstName}</div>
+              <div>Hello, {loggedUser.firstname}</div>
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -176,8 +176,8 @@ function ManagerDashboard() {
                 >
                   <span className="sr-only">Open user menu</span>
                   <div className="h-8 w-8 rounded-full border flex items-center justify-center  font-medium">
-                    {loggedUser.firstName[0]}
-                    {loggedUser.email[0]}
+                    {loggedUser.firstname[0]}
+                    {loggedUser.lastname[0]}
                   </div>
                 </button>
                 {showDropdown && (
@@ -185,7 +185,7 @@ function ManagerDashboard() {
                     <div className="py-1">
                       <div className="px-4 py-2 text-sm text-gray-700 border-b">
                         <div className="font-medium">
-                          {loggedUser.firstName}
+                          {loggedUser.firstname}
                         </div>
                         <div className="text-gray-500">{loggedUser.email}</div>
                       </div>

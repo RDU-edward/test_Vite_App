@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import sampleData from "../data/sampleData";
+import axios from "axios";
 
 const Login = ({ toggleLoginModal }) => {
   const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ const Login = ({ toggleLoginModal }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Clear previous error
     setIsLoading(true); // Start loading
@@ -21,53 +22,96 @@ const Login = ({ toggleLoginModal }) => {
       return;
     }
 
-    // Admin login validation
-    const adminUser = sampleData.validateAdminLogin(email, password);
-
-    // Handle login for admin or regular user
-    if (adminUser) {
-      // Store admin session in localStorage
-      localStorage.setItem("adminUser", JSON.stringify(adminUser));
-      localStorage.setItem(
-        "loggedInUser",
-        JSON.stringify({ ...adminUser, firstName: adminUser.name }),
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/user/login",
+        {
+          email,
+          password,
+        },
       );
+      const admin = response.data.user.role === "admin";
+      const manager = response.data.user.role === "manager";
+      const tenant = response.data.user.role === "tenant";
 
-      setIsLoading(false); // Stop loading
+      if (admin) {
+        localStorage.setItem(
+          "loggedInUser",
+          JSON.stringify(response.data.user),
+        );
 
-      // Close modal and navigate to admin dashboard
-      toggleLoginModal();
-      navigate("/admin/dashboard_main");
-      return;
-    }
+        setIsLoading(false); // Stop loading
 
-    // Regular user login validation
-    const storedUser = JSON.parse(localStorage.getItem("users"));
-    const filteredUser = storedUser.filter(
-      (user) => user.email === email && user.password === password,
-    );
+        // Close modal and navigate to admin dashboard
+        toggleLoginModal();
+        navigate("/admin/dashboard_main");
+        return;
+      }
 
-    console.log(filteredUser);
+      if (manager) {
+        localStorage.setItem(
+          "loggedInUser",
+          JSON.stringify(response.data.user),
+        );
 
-    if (filteredUser.length > 0) {
-      // Regular user login successful
-      setIsLoading(false); // Stop loading
-      localStorage.setItem("loggedInUser", JSON.stringify(filteredUser[0]));
-      alert("User login successful!"); // Ideally, replace this with a more user-friendly method
-      toggleLoginModal();
-      console.log(filteredUser[0]?.role);
+        setIsLoading(false); // Stop loading
 
-      if (filteredUser[0]?.role === "manager") {
+        // Close modal and navigate to admin dashboard
+        toggleLoginModal();
         navigate("/manager/dashboard");
+        return;
       } else {
         navigate("/");
       }
-    } else {
-      // Invalid login
-      setError("Invalid email or password");
-      setIsLoading(false); // Stop loading
+    } catch (error) {
+      console.log(error);
     }
+    // // Admin login validation
+    // const adminUser = sampleData.validateAdminLogin(email, password);
+
+    // // Handle login for admin or regular user
+    // if (adminUser) {
+    //   // Store admin session in localStorage
+    //   localStorage.setItem("adminUser", JSON.stringify(adminUser));
+    //   localStorage.setItem(
+    //     "loggedInUser",
+    //     JSON.stringify({ ...adminUser, firstName: adminUser.name }),
+    //   );
+
+    //   setIsLoading(false); // Stop loading
+
+    //   // Close modal and navigate to admin dashboard
+    //   toggleLoginModal();
+    //   navigate("/admin/dashboard_main");
+    //   return;
   };
+
+  // Regular user login validation
+  // const storedUser = JSON.parse(localStorage.getItem("users"));
+  // const filteredUser = storedUser.filter(
+  //   (user) => user.email === email && user.password === password,
+  // );
+
+  // console.log(filteredUser);
+
+  // if (filteredUser.length > 0) {
+  //   // Regular user login successful
+  //   setIsLoading(false); // Stop loading
+  //   localStorage.setItem("loggedInUser", JSON.stringify(filteredUser[0]));
+  //   alert("User login successful!"); // Ideally, replace this with a more user-friendly method
+  //   toggleLoginModal();
+  //   console.log(filteredUser[0]?.role);
+
+  //   if (filteredUser[0]?.role === "manager") {
+  //     navigate("/manager/dashboard");
+  //   } else {
+  //     navigate("/");
+  //   }
+  // } else {
+  //   // Invalid login
+  //   setError("Invalid email or password");
+  //   setIsLoading(false); // Stop loading
+  // }
 
   return (
     <div className="fixed inset-0 bg-gray-800/50 flex justify-center items-center z-50 px-4">

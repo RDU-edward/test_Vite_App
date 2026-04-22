@@ -1,104 +1,106 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../component/Navbar";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import Pagination from "../component/Pagination";
 import Footer from "../component/Footer";
+import axios from "axios";
 
 const AdminMainDashboard = () => {
-  const [managers, setManagers] = useState([
-    {
-      id: 1,
-      firstName: "Lavyn",
-      lastName: "Mary",
-      email: "mary@mail.com",
-      contactNumber: "09912732122",
-      role: "manager",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      firstName: "John",
-      lastName: "Doe",
-      email: "john@mail.com",
-      contactNumber: "09912732123",
-      role: "manager",
-      status: "Active",
-    },
-    {
-      id: 3,
-      firstName: "Alice",
-      lastName: "Smith",
-      email: "alice@mail.com",
-      contactNumber: "09912732124",
-      role: "manager",
-      status: "Pending",
-    },
-    {
-      id: 4,
-      firstName: "Bob",
-      lastName: "Brown",
-      email: "bob@mail.com",
-      contactNumber: "09912732125",
-      role: "Tenant",
-      status: "Active",
-    },
-    {
-      id: 5,
-      firstName: "Eve",
-      lastName: "Davis",
-      email: "eve@mail.com",
-      contactNumber: "09912732126",
-      role: "manager",
-      status: "Pending",
-    },
-    {
-      id: 6,
-      firstName: "Charlie",
-      lastName: "Miller",
-      email: "charlie@mail.com",
-      contactNumber: "09912732127",
-      role: "manager",
-      status: "Active",
-    },
-    {
-      id: 7,
-      firstName: "Grace",
-      lastName: "Wilson",
-      email: "grace@mail.com",
-      contactNumber: "09912732128",
-      role: "manager",
-      status: "Pending",
-    },
-    {
-      id: 8,
-      firstName: "Henry",
-      lastName: "Moore",
-      email: "henry@mail.com",
-      contactNumber: "09912732129",
-      role: "Tenant",
-      status: "Active",
-    },
-    {
-      id: 9,
-      firstName: "Ivy",
-      lastName: "Taylor",
-      email: "ivy@mail.com",
-      contactNumber: "09912732130",
-      role: "Tenant",
-      status: "Active",
-    },
-    {
-      id: 10,
-      firstName: "Jack",
-      lastName: "Anderson",
-      email: "jack@mail.com",
-      contactNumber: "09912732131",
-      role: "manager",
-      status: "Inactive",
-    },
-  ]);
+  // const [managers, setManagers] = useState([
+  //   {
+  //     id: 1,
+  //     firstName: "Lavyn",
+  //     lastName: "Mary",
+  //     email: "mary@mail.com",
+  //     contactNumber: "09912732122",
+  //     role: "manager",
+  //     status: "Pending",
+  //   },
+  //   {
+  //     id: 2,
+  //     firstName: "John",
+  //     lastName: "Doe",
+  //     email: "john@mail.com",
+  //     contactNumber: "09912732123",
+  //     role: "manager",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 3,
+  //     firstName: "Alice",
+  //     lastName: "Smith",
+  //     email: "alice@mail.com",
+  //     contactNumber: "09912732124",
+  //     role: "manager",
+  //     status: "Pending",
+  //   },
+  //   {
+  //     id: 4,
+  //     firstName: "Bob",
+  //     lastName: "Brown",
+  //     email: "bob@mail.com",
+  //     contactNumber: "09912732125",
+  //     role: "Tenant",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 5,
+  //     firstName: "Eve",
+  //     lastName: "Davis",
+  //     email: "eve@mail.com",
+  //     contactNumber: "09912732126",
+  //     role: "manager",
+  //     status: "Pending",
+  //   },
+  //   {
+  //     id: 6,
+  //     firstName: "Charlie",
+  //     lastName: "Miller",
+  //     email: "charlie@mail.com",
+  //     contactNumber: "09912732127",
+  //     role: "manager",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 7,
+  //     firstName: "Grace",
+  //     lastName: "Wilson",
+  //     email: "grace@mail.com",
+  //     contactNumber: "09912732128",
+  //     role: "manager",
+  //     status: "Pending",
+  //   },
+  //   {
+  //     id: 8,
+  //     firstName: "Henry",
+  //     lastName: "Moore",
+  //     email: "henry@mail.com",
+  //     contactNumber: "09912732129",
+  //     role: "Tenant",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 9,
+  //     firstName: "Ivy",
+  //     lastName: "Taylor",
+  //     email: "ivy@mail.com",
+  //     contactNumber: "09912732130",
+  //     role: "Tenant",
+  //     status: "Active",
+  //   },
+  //   {
+  //     id: 10,
+  //     firstName: "Jack",
+  //     lastName: "Anderson",
+  //     email: "jack@mail.com",
+  //     contactNumber: "09912732131",
+  //     role: "manager",
+  //     status: "Inactive",
+  //   },
+  // ]);
 
+  const [managers, setManager] = useState([]);
   const [selectedManager, setSelectedManager] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,6 +108,22 @@ const AdminMainDashboard = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const userPerPage = 5;
+
+  const getAllUsers = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/user/all-users",
+      );
+      setManager(response.data); // updates your state with the fetched users
+      console.log(response); // logs the full response object
+    } catch (error) {
+      console.error("Failed to fetch users:", error); // it's important to handle errors
+    }
+  };
+
+  useEffect(() => {
+    getAllUsers(); // fetch users on component mount
+  }, []);
 
   const handleDelete = (id) => {
     setManagers(managers.filter((manager) => manager.id !== id));
@@ -127,8 +145,8 @@ const AdminMainDashboard = () => {
 
     let aValue, bValue;
     if (sortConfig.key === "name") {
-      aValue = `${a.firstName} ${a.lastName}`.toLowerCase();
-      bValue = `${b.firstName} ${b.lastName}`.toLowerCase();
+      aValue = `${a.firstname} ${a.lastmame}`.toLowerCase();
+      bValue = `${b.firstname} ${b.lastmame}`.toLowerCase();
     } else if (sortConfig.key === "role") {
       const roleOrder = { manager: 1, tenant: 2 };
       aValue = roleOrder[a.role.toLowerCase()];
@@ -186,9 +204,9 @@ const AdminMainDashboard = () => {
   const exportToExcel = () => {
     // Map filteredManagers to a simple array of objects
     const dataToExport = filteredManagers.map((manager) => ({
-      Name: `${manager.firstName} ${manager.lastName}`,
+      Name: `${manager.firstname} ${manager.lastname}`,
       Email: manager.email,
-      Contact: manager.contactNumber,
+      Contact: manager.contact_number,
       Role: manager.role,
       Status: manager.status,
     }));
@@ -227,7 +245,7 @@ const AdminMainDashboard = () => {
           />
           <button
             onClick={exportToExcel}
-            className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
           >
             Export to Excel
           </button>
@@ -272,7 +290,7 @@ const AdminMainDashboard = () => {
                   <tr key={manager.id}>
                     <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {manager.firstName} {manager.lastName}
+                      {manager.firstname} {manager.lastname}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {manager.email}
@@ -283,26 +301,26 @@ const AdminMainDashboard = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          manager.status === "Active"
+                          manager.status === "active"
                             ? "bg-green-100 text-green-800"
-                            : manager.status === "Pending"
+                            : manager.status === "pending"
                               ? "bg-yellow-100 text-yellow-800"
                               : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {manager.status}
+                        {manager.status.toUpperCase()}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
                       <button
                         onClick={() => handleView(manager)}
-                        className="px-3 py-1 bg-blue-500  rounded hover:bg-blue-600"
+                        className="px-3 py-1 text-white bg-blue-500  rounded hover:bg-blue-600"
                       >
                         View
                       </button>
                       <button
                         onClick={() => handleDelete(manager.id)}
-                        className="px-3 py-1 bg-red-500 rounded hover:bg-red-600"
+                        className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-600"
                       >
                         Delete
                       </button>
