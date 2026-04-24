@@ -21,7 +21,7 @@ const TestProperty = ({ properties, setProperties, setShowForm, property }) => {
   );
 
   // const [imagePreviews, setImagePreviews] = useState([]);
-
+  // awiheyqwoieioqweio
   const handleFiles = (files) => {
     const newFiles = Array.from(files);
     setFormData((prev) => ({
