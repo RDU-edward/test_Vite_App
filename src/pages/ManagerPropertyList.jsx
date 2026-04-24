@@ -6,12 +6,21 @@ import { MdOutlineDashboard } from "react-icons/md";
 import Footer from "../component/Footer";
 import TestProperty from "./TestProperty";
 import TestDashboard from "./TestDashboard";
+import { IoIosLogOut } from "react-icons/io";
 function ManagerPropertyList() {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
   const [showForm, setShowForm] = useState(false);
+
+  // Logout
+  const handleLogout = () => {
+    if (window.confirm("Are you sure you want to logout?")) {
+      localStorage.removeItem("loggedInUser");
+      navigate("/");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

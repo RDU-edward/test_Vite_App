@@ -143,7 +143,7 @@ function ManagerDashboard() {
 
             <div className="flex items-center gap-4">
               <button
-                className="px-6 border py-2 rounded-4xl text-white bg-blue-500 font-medium cursor-pointer hover:bg-blue-700"
+                className="px-4 border py-2 text-sm text-gray-700  cursor-pointer hover:bg-gray-100"
                 onClick={() => navigate("/manager/property_list")}
               >
                 View Properties
@@ -204,7 +204,7 @@ function ManagerDashboard() {
           </div>
         </div>
       </nav>
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col p-4 lg:p-6">
         {/* Statistics Cards */}
         <section>
           <div className="max-w-7xl mx-auto mb-12">

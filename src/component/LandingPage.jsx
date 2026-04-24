@@ -8,6 +8,7 @@ import sampleData from "../data/sampleData";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import axios from "axios";
 
 function LandingPage() {
   // const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -62,6 +63,30 @@ function LandingPage() {
     }
   };
 
+  const [properties1, setProperties1] = useState([]);
+  const [propertyFilePaths, setPropertyFilePaths] = useState([]);
+
+  const getAllProperty = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/property/all_property",
+      );
+      setProperties1(response.data);
+
+      // Parse the file paths for each property and store them in an array
+      const filePaths = response.data.map(
+        (property) => JSON.parse(property.files), // Assuming `files` is a JSON string in the database
+      );
+      setPropertyFilePaths(filePaths); // Store the array of file paths
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getAllProperty();
+  }, []);
+  console.log(propertyFilePaths);
+
   return (
     <div className="min-h-screen bg-gray-50 ">
       {/* Navbar */}
@@ -106,27 +131,24 @@ function LandingPage() {
           </span>
         </div>
         <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
-          {sampleData
-            .getSampleHouses()
-            .slice(0, 5)
-            .map((house, index) => (
-              <div key={index}>
-                <img
-                  src={house.image}
-                  alt={house.title}
-                  className="rounded-md w-full cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg"
-                  onClick={() => handleHouseClick(house.id)} // On click, navigate to the details page with the house id
-                />
-                <div className="mt-2">
-                  <p className="text-sm">{house.title}</p>
-                  <p className="text-xs">{house.location}</p>
-                  <p className="text-xs font-medium">{house.price}</p>
-                </div>
+          {properties1.slice(0, 5).map((property, index) => (
+            <div key={index}>
+              <img
+                src={`http://localhost:3000/${propertyFilePaths[index] && propertyFilePaths[index][0]}`}
+                alt={property.property_title}
+                className="rounded-md h-44 w-full cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg"
+                onClick={() => handleHouseClick(property.id)} // On click, navigate to the details page with the property id
+              />
+              <div className="mt-2">
+                <p className="text-sm">{property.property_title}</p>
+                <p className="text-xs">{property.address}</p>
+                <p className="text-xs font-medium">{property.monthly_price}</p>
               </div>
-            ))}
+            </div>
+          ))}
         </div>
         <button
-          className="border border-gray-700  p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700  transition duration-300"
+          className="border border-gray-700  p-2 w-32 rounded mx-auto mt-6 block cursor-pointer hover:bg-gray-700 hover:text-white  transition duration-300"
           onClick={handleViewAllHouses}
         >
           View More

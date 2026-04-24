@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import sampleData from "../data/sampleData";
 import {
@@ -8,47 +8,105 @@ import {
   FaBath,
   FaTv,
   FaSnowflake,
+  FaMobile,
+  FaVoicemail,
+  FaEnvelope,
 } from "react-icons/fa"; // Import icons
 import Footer from "../component/Footer";
 import Navbar from "../component/Navbar";
+import axios from "axios";
+import testimage from "../assets/ihomesLogo.png";
+import { FaLocationPin } from "react-icons/fa6";
 
 const ViewHouseDetails = () => {
   const { id } = useParams(); // Grab the house ID from the URL
   console.log(typeof id);
 
   // You can now fetch and display the details of the house using the `id`
-  const house = sampleData.getSampleHouses().find((h) => h.id == id);
-  console.log(house);
+  // const house = sampleData.getSampleHouses().find((h) => h.id == id);
+  // console.log(house);
+
+  console.log(id);
+
+  const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+  const [guestData, setGuestData] = useState({
+    property_id: id,
+    fullname: loggedUser?.firstname + loggedUser?.lastname,
+    contact_number: loggedUser?.contact_number,
+    email: loggedUser?.email,
+    movein_date: "",
+    total_occupants: "",
+  });
+
+  const [details, setDetails] = useState();
+  const [propertyFiles, setPropertyFiles] = useState([]);
+
+  const getHouseDetails = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/property/${id}`,
+      );
+      console.log(response.data);
+      setDetails(response.data[0]);
+      const filePaths = response.data.map((files) => JSON.parse(files.files));
+      setPropertyFiles(filePaths[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getHouseDetails();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setGuestData({ ...guestData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/reservation/create_reservation",
+        guestData,
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 ">
       <Navbar />
 
-      <section className="mt-2 py-20">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="mt-4 px-6">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            {house ? house.title : "House Not Found"}
+            {details ? details.property_title : "House Not Found"}
           </h2>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="bg-amber-700 flex-1">
               <img
-                src={house?.image}
-                alt={house?.title}
+                src={`http://localhost:3000/${propertyFiles[0]}`}
+                alt={`http://localhost:3000/${propertyFiles[0]}`}
                 className="w-full h-full object-cover  "
               />
             </div>
             <div className="flex-1">
               <div class="grid grid-cols-2 gap-2">
-                <img src={house?.image} alt={house?.title} />
-                <img src={house?.image} alt={house?.title} />
-                <img src={house?.image} alt={house?.title} />
-                <img src={house?.image} alt={house?.title} />
+                {propertyFiles.map((item, index) => (
+                  <img src={`http://localhost:3000/${item}`} alt={item} />
+                ))}
               </div>
             </div>
           </div>
           <div className="mt-4">
             <div className="font-bold text-xl text-gray-700">
-              Entire home in Tagaytay, Philippines
+              {details?.description}
             </div>
             <div className="flex items-center space-x-4 text-gray-700">
               <span>8 guests . </span>
@@ -59,47 +117,8 @@ const ViewHouseDetails = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 max-w-7xl mx-auto px-6 mt-6">
-          <div className="flex-1 rounded-2xl">
-            <div className="bg-white rounded-2xl w-96 p-6 border border-gray-400 shadow-xl shadow-gray-400">
-              <div className="text-2xl mt-2 text-gray-700 font-semibold mb-4 ">
-                {house.price} per night {/* Assuming house.price is a number */}
-              </div>
-              <form className="p-4 text-gray-700 w-full s">
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Check In
-                  </label>
-                  <input
-                    type="date"
-                    min={new Date().toISOString().split("T")[0]} // Disable past dates
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Checkout
-                  </label>
-                  <input
-                    type="date"
-                    min={new Date().toISOString().split("T")[0]} // Disable past dates
-                    className="w-full p-2 border border-gray-300 rounded"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-500  p-4 rounded-xl cursor-pointer hover:bg-blue-600 transition duration-300"
-                >
-                  Reserve
-                </button>
-                <div className="text-gray-700 text-sm mt-2 text-center">
-                  You won't be charged yet
-                </div>
-              </form>
-            </div>
-          </div>
-          <div className="text-gray-700 flex-1">
-            {/* Changed "Amenities" to "Guest Perks" */}
+        <div className="flex flex-col md:flex-row gap-4 max-w-7xl mx-auto  mt-6">
+          <div className="flex-1 text-gray-700">
             <div className="mb-4">
               <h3 className="text-xl font-semibold text-gray-700">
                 Guest Perks
@@ -128,6 +147,103 @@ const ViewHouseDetails = () => {
                 <div className="flex items-center">
                   <FaBath className="text-gray-600 text-lg" />
                   <span className="ml-2 text-lg">Private Bathroom</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex-1 w-full mx-auto  ">
+            <form
+              action=""
+              className=" shadow-md shadow-gray-700  rounded  mx-auto p-8 flex flex-col  justify-center"
+              onSubmit={handleSubmit}
+            >
+              <div className="font-bold text-xl text-gray-700">
+                Monthly Price 20, 000
+              </div>
+              <span className="text-red-500 text-sm font-medium mb-2">
+                (10% Downpayment)
+              </span>
+
+              <div className="mb-4">
+                <label htmlFor="">Move In Date</label>
+                <input
+                  type="date"
+                  name="movein_date"
+                  className="border w-full rounded block p-2"
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="">Total Occupants</label>
+                <input
+                  type="text"
+                  name="total_occupants"
+                  className="border rounded w-full block p-2"
+                  onChange={handleChange}
+                />
+              </div>
+
+              <button className="w-full bg-red-500 text-white h-12">
+                Reserved
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+      <section className="py-10 ">
+        <div className="flex flex-col md:flex-row gap-6 ">
+          <div className="flex-1 w-full mx-auto px-6 ">
+            <form
+              action=""
+              className=" shadow-md shadow-gray-700 rounded  p-8 flex flex-col  justify-center"
+            >
+              <div className="font-bold text-xl text-gray-700">
+                Do you have any questions?
+              </div>
+
+              <div className="mb-4 mt-4">
+                <textarea
+                  name=""
+                  id=""
+                  cols="40"
+                  className="border block w-full rounded-md  h-30 p-2 text-sm"
+                ></textarea>
+              </div>
+
+              <button className="w-full rounded-2xl  bg-gray-500 text-white h-12">
+                Message Owner
+              </button>
+            </form>
+          </div>
+          <div className="flex-1">
+            <div className="text-xl font-medium mb-2 text-center">
+              Owner Information
+            </div>
+
+            <div className="flex flex-row  justify-center space-x-6">
+              <div className="">
+                <img
+                  src={testimage}
+                  alt=""
+                  srcset=""
+                  className="h-40 max-w-40 rounded-full"
+                />
+                <div className="font-medium text-lg ml-10 mt-2 ">
+                  {details?.owner_firstname} {details?.owner_firstname}
+                </div>
+              </div>
+              <div className="flex flex-col justify-center">
+                <div className="flex space-x-1">
+                  <FaMobile className="text-md mt-1 text-gray-500" />
+                  <span>{details?.owner_mobile}</span>
+                </div>
+                <div className="flex space-x-1">
+                  <FaEnvelope className="text-md mt-1 text-blue-400" />
+                  <span>{details?.owner_email}</span>
+                </div>
+                <div className="flex space-x-1">
+                  <FaLocationPin className="text-md mt-1 text-red-600" />
+                  <span>{details?.owner_address}</span>
                 </div>
               </div>
             </div>

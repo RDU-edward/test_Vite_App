@@ -60,8 +60,19 @@ const Login = ({ toggleLoginModal }) => {
         toggleLoginModal();
         navigate("/manager/dashboard");
         return;
-      } else {
+      }
+      if (tenant) {
+        localStorage.setItem(
+          "loggedInUser",
+          JSON.stringify(response.data.user),
+        );
+
+        setIsLoading(false); // Stop loading
+
+        // Close modal and navigate to admin dashboard
+        toggleLoginModal();
         navigate("/");
+        return;
       }
     } catch (error) {
       console.log(error);

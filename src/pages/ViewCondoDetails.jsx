@@ -134,6 +134,11 @@ const ViewCondoDetails = () => {
           </div>
         </div>
       </section>
+      <section>
+        <div className="flex justify-between">
+          <div></div>
+        </div>
+      </section>
 
       {/* Footer */}
       <Footer />
