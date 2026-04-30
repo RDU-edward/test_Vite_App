@@ -9,20 +9,29 @@ import {
   FaSnowflake,
   FaMobile,
   FaEnvelope,
+  FaDotCircle,
+  FaBed,
+  FaToilet,
+  FaChartArea,
+  FaVectorSquare,
 } from "react-icons/fa";
-import { FaLocationPin } from "react-icons/fa6";
+import { FaImages, FaLocationPin } from "react-icons/fa6";
 import Footer from "../component/Footer";
 import Navbar from "../component/Navbar";
 import axios from "axios";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+// import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import toCurrency from "../utils/toCurrency";
 import { toast } from "react-toastify";
 import Loader from "../utils/Loader";
+import GoogleMaps from "../component/GoogleMaps";
+import GetPropertyMapLocation from "../component/GetPropertyMapLocation";
+import amenities from "../data/amenities";
+import default_avatar from "../assets/ihomesLogo.png";
 
 const ViewHouseDetails = () => {
   const { id } = useParams();
-  const stripe = useStripe();
-  const elements = useElements();
+  // const stripe = useStripe();
+  // const elements = useElements();
 
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
   const navigate = useNavigate();
@@ -54,8 +63,6 @@ const ViewHouseDetails = () => {
   const handleChange = (e) => {
     setclientData({ ...clientData, [e.target.name]: e.target.value });
   };
-
-  console.log(clientData);
 
   const insertReservation = async () => {
     await axios.post(
@@ -92,17 +99,26 @@ const ViewHouseDetails = () => {
       }, 3000);
     }
   };
-  console.log(details);
 
+  const selectedAmenities =
+    details?.amenities.split(",").map((a) => a.trim()) || [];
+
+  console.log(selectedAmenities); // ["Pool", "Wifi", "Parking"
+
+  const filteredAmenities = amenities.filter((amenity) =>
+    selectedAmenities.includes(amenity.name),
+  );
+
+  console.log(details);
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* TITLE */}
-        <h1 className="text-3xl font-semibold text-gray-900 mb-4">
+        <div className="text-xl font-semibold text-gray-700 mb-4">
           {details?.property_title}
-        </h1>
+        </div>
 
         {/* IMAGE GALLERY */}
         <div className="grid md:grid-cols-2 gap-4 mb-8">
@@ -111,87 +127,125 @@ const ViewHouseDetails = () => {
             className="w-full h-[420px] object-cover rounded-xl"
           />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="relative grid grid-cols-2 gap-3">
+            <div className="absolute flex gap-2 right-20 bottom-5 py-2 px-2 bg-slate-50/90 text-xs cursor-pointer hover:bg-slate-50 hover:scale-110 ">
+              <FaImages className="text-xl" /> Show All Photos
+            </div>
             {/* {propertyFiles.map((img, i) => ( */}
             {propertyFiles.slice(1, 5).map((img, i) => (
               <img
                 key={i}
                 src={`http://localhost:3000/${img}`}
-                className="h-48 w-full object-cover rounded-lg"
+                className="h-48 w-full object-cover rounded-2xl"
               />
             ))}
           </div>
         </div>
 
         {/* MAIN CONTENT */}
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* LEFT SIDE */}
           <div className="md:col-span-2 space-y-6">
             {/* DESCRIPTION */}
             <div>
-              <h2 className="text-xl font-semibold mb-2">
+              <h2 className="text-lg text-gray-700 font-semibold mb-2">
                 {details?.description}
               </h2>
-              <p className="text-gray-500">
-                8 guests · 3 bedrooms · 4 beds · 3 baths
-              </p>
+              <div className="text-gray-500 grid grid-cols-2 text-sm">
+                <span className="flex items-center space-x-2">
+                  <FaBed />
+                  <span>{details?.bedrooms} bedrooms</span>
+                </span>
+                <span className="flex items-center space-x-2">
+                  <FaToilet />
+                  <span>{details?.bathrooms} bathrooms</span>
+                </span>
+
+                <span className="flex items-center space-x-2">
+                  <FaChartArea />
+                  <span>Floor Area: {details?.floor_area} sqm</span>
+                </span>
+                <span className="flex items-center space-x-2">
+                  <FaVectorSquare />
+                  <span>Lot Size: {details?.lot_size} sqm</span>
+                </span>
+              </div>
             </div>
 
             {/* PERKS */}
             <div>
               <h3 className="text-lg font-semibold mb-3">
-                What this place offers
+                Features & Amenities
               </h3>
 
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { icon: <FaWifi />, label: "WiFi" },
-                  { icon: <FaTv />, label: "TV" },
-                  { icon: <FaSnowflake />, label: "Aircon" },
-                  { icon: <FaCar />, label: "Parking" },
-                  { icon: <FaSwimmingPool />, label: "Pool" },
-                  { icon: <FaBath />, label: "Bathroom" },
-                ].map((item, i) => (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 border border-gray-500 rounded-2xl  p-6 mb-6">
+                {filteredAmenities.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <span className="text-indigo-500 text-xl">{item.icon}</span>
-                    <span>{item.label}</span>
+                    <span>{item.name}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* OWNER */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <h3 className="font-semibold mb-4">Hosted by</h3>
+            <div className="">
+              <h3 className="font-semibold mb-4 text-center">Hosted by</h3>
 
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-gray-300" />
+              <div className="flex items-center justify-center gap-8">
+                <img
+                  src={details?.owner_photo || default_avatar}
+                  alt={`${details?.owner_firstname} ${details?.owner_lastname}`}
+                  className="h-20 w-20 rounded-full shadow-lg object-cover"
+                />
 
                 <div>
-                  <div className="font-medium">
+                  <div className="font-medium flex items-center gap-2">
                     {details?.owner_firstname} {details?.owner_lastname}
+                    {details?.is_verified && (
+                      <span className="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">
+                        Verified
+                      </span>
+                    )}
                   </div>
-                  <div className="text-sm text-gray-500 flex items-center gap-2">
-                    <FaMobile /> {details?.owner_mobile}
-                  </div>
-                  <div className="text-sm text-gray-500 flex items-center gap-2">
-                    <FaEnvelope /> {details?.owner_email}
-                  </div>
-                  <div className="text-sm text-gray-500 flex items-center gap-2">
-                    <FaLocationPin /> {details?.owner_address}
+
+                  <div className="text-sm text-gray-500 grid grid-cols-2 mt-2">
+                    <div className="flex items-center gap-2">
+                      <FaMobile />
+                      <a
+                        href={`tel:${details?.owner_mobile}`}
+                        className="hover:underline"
+                      >
+                        {details?.owner_mobile}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaEnvelope />
+                      <a
+                        href={`mailto:${details?.owner_email}`}
+                        className="hover:underline"
+                      >
+                        {details?.owner_email}
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaLocationPin />
+                      <span>{details?.owner_address}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div className="divider "></div>
           </div>
 
           {/* RIGHT SIDE (BOOKING CARD) */}
           <div>
             <form
               onSubmit={payInStripe}
-              className="bg-white p-6 rounded-xl shadow-lg border flex flex-col gap-9"
+              className="bg-white p-6 rounded-xl text-gray-700 shadow-lg border border-gray-500 flex flex-col gap-9"
             >
-              <div className="text-2xl font-semibold">
+              <div className="text-2xl  font-semibold">
                 {toCurrency(details?.monthly_price)}
                 <span className="text-sm text-gray-500"> / month</span>
               </div>
@@ -216,18 +270,31 @@ const ViewHouseDetails = () => {
               />
 
               <div className="p-3 border rounded-lg">
-                <CardElement />
+                {/* <CardElement /> */}
               </div>
 
               <button
-                disabled={!stripe}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-semibold"
+                // disabled={!stripe}
+                className="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg font-semibold"
               >
                 Pay Now
               </button>
             </form>
           </div>
         </div>
+      </div>
+      <div className="px-12 mb-4">
+        {/* Google Maps */}
+        <div className="text-xl font-bold text-gray-500">
+          You will enjoy living here!
+        </div>
+        <div className="mt-4 mb-2 italic font-medium text-gray-700 text-">
+          {details?.address}
+        </div>
+        <GetPropertyMapLocation
+          addressLat={details?.address_lat}
+          addressLng={details?.address_long}
+        />
       </div>
 
       <Footer />

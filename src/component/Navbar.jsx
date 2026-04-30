@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Signup from "./Signup";
 import Login from "./Login";
@@ -37,11 +37,26 @@ const Navbar = () => {
     }
   };
 
+  useEffect(() => {
+    if (isLoginModalOpen || isSignUpModalOpen) {
+      // If any modal is open, hide overflow
+      document.body.style.overflow = "hidden";
+    } else {
+      // If no modal is open, allow scrolling
+      document.body.style.overflow = "auto";
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isLoginModalOpen, isSignUpModalOpen]);
+
   return (
-    <nav className="bg-white shadow-md z-50">
-      <div className="px-10 py-4 flex justify-between items-center">
+    <nav className="relative bg-white shadow-md z-100">
+      <div className="px-4 sm:px-6 lg:px-8 py-4 flex justify-between">
         {/* Logo */}
-        <div className="text-2xl font-semibold text-gray-900 flex items-center">
+        <div className="text-2xl font-semibold text-gray-900 flex">
           <a href="/" className="hover:text-blue-500 flex items-center">
             <span className="mr-2">
               <svg
@@ -75,7 +90,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation or User */}
         {loggedInUser ? (
-          <div className="flex items-center text-gray-700 gap-4">
+          <div className="flex items-center text-gray-700 gap-2">
             {/* Message Icon */}
             <div className="relative">
               <MdOutlineDashboard className="text-xl" onClick={goToDashboard} />
@@ -134,16 +149,16 @@ const Navbar = () => {
             </div>
           </div>
         ) : (
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 ">
             <button
               onClick={toggleSignUpModal}
-              className="text-gray-700 hover:text-blue-500"
+              className="text-gray-700 hover:font-medium"
             >
               Sign Up
             </button>
             <button
               onClick={toggleLoginModal}
-              className="text-gray-700 border border-gray-700 px-3 py-1 rounded hover:bg-gray-700  transition duration-300"
+              className="text-gray-700  border  border-gray-700 px-3 py-1 rounded hover:bg-gray-700 hover:text-white  transition duration-300"
             >
               Log In
             </button>
@@ -151,38 +166,43 @@ const Navbar = () => {
         )}
 
         {/* Hamburger Icon for Mobile */}
-        <div className="md:hidden flex items-center">
-          <button
-            onClick={toggleMenu}
-            className="text-gray-900 hover:text-blue-500"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
+        {!loggedInUser && (
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={toggleMenu}
+              className="text-gray-900 hover:text-blue-500"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-        </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Mobile Navigation Links */}
       {isMenuOpen && (
         <div className="md:hidden bg-white shadow-lg absolute top-0 left-0 right-0 px-6 py-4">
           <div className="flex justify-end">
-            <button onClick={toggleMenu} className="text-gray-700 text-2xl">
+            <button
+              onClick={toggleMenu}
+              className="text-red-500 cursor-pointer hover:scale-150"
+            >
               &times;
             </button>
           </div>
-          <div className="mt-4 flex flex-col space-y-2">
+          <div className="mt-4 flex flex-col gap-1">
             {!loggedInUser && (
               <>
                 <button
@@ -190,7 +210,7 @@ const Navbar = () => {
                     toggleSignUpModal();
                     toggleMenu();
                   }}
-                  className="text-gray-700 py-2 text-left"
+                  className="text-gray-700 p-1  w-18 hover:font-medium transition duration-300 "
                 >
                   Sign Up
                 </button>
@@ -199,7 +219,7 @@ const Navbar = () => {
                     toggleLoginModal();
                     toggleMenu();
                   }}
-                  className="text-gray-700 py-2 text-left"
+                  className="text-gray-700 p-1  border rounded w-18 hover:bg-gray-700 hover:text-white  transition duration-300 "
                 >
                   Log In
                 </button>

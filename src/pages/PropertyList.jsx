@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { FaEye, FaPen, FaTrash } from "react-icons/fa6";
 import AddPropertyForm from "../component/AddPropertyForm";
 import toCurrency from "../utils/toCurrency";
+import { useNavigate } from "react-router-dom";
 
-const TestDashboard = ({ properties, setProperties, setShowForm }) => {
+const PropertyList = ({ properties, setProperties, setShowForm }) => {
   const [formOpen, setFormOpen] = useState(false);
   const [filter, setFilter] = useState("all");
   const [editingIndex, setEditingIndex] = useState(null);
@@ -12,6 +13,8 @@ const TestDashboard = ({ properties, setProperties, setShowForm }) => {
   const [editPreviews, setEditPreviews] = useState([]);
 
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+  const navigate = useNavigate();
 
   const filteredProperties = properties.filter((prop) => {
     if (filter === "all") return true;
@@ -75,6 +78,11 @@ const TestDashboard = ({ properties, setProperties, setShowForm }) => {
     setEditingIndex(null);
   };
 
+  const handlePropertyClick = (id) => {
+    //Navigate to the house details page with the selected house ID
+    navigate(`/viewHouseDetails/${id}`);
+  };
+
   const [editingProperty, setEditingProperty] = useState(null);
   const [properties1, setProperties1] = useState([]);
   const [propertyFilePaths, setPropertyFilePaths] = useState([]);
@@ -106,34 +114,32 @@ const TestDashboard = ({ properties, setProperties, setShowForm }) => {
         <AddPropertyForm setShowForm={setFormOpen} property={editingProperty} />
       ) : (
         <main className="p-6 lg:p-10 flex-1 flex flex-col">
-          <div className="flex flex-col md:flex-row justify-between py-4">
-            <h2 className="text-xl font-bold mb-4 ">Property Dashboard</h2>
-
-            <button
-              className="w-32 border p-1 hover:bg-gray-100"
+          <div className="flex flex-col md:flex-row justify-between mb-2">
+            <div className="flex font-bold text-xl items-end mb-4 md:mb-0">
+              Property Dashboard
+            </div>
+            <div
+              className="p-2 border text-sm text-gray-700  cursor-pointer hover:bg-gray-100"
               onClick={() => setShowForm(true)}
             >
               Add Properties
-            </button>
+            </div>
           </div>
 
           <section className="flex-1 ">
             <div className="mt-2 grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-4">
               {properties1.map((property, index) => (
                 <div
-                  className="px-4 py-2 border border-gray-200  shadow-md rounded-md hover:shadow-blue-700"
+                  className="border border-gray-300 p-2 shadow rounded-md "
                   key={property.id}
                 >
-                  <div
-                    className={`${property?.availability == "available" ? "text-green-600" : "text-red-500"} font-bold tracking-wider mb-4 mt-2`}
-                  >
-                    {property.availability.toUpperCase()}
-                  </div>
                   <img
                     src={`http://localhost:3000/${propertyFilePaths[index] && propertyFilePaths[index][0]}`}
                     alt={`http://localhost:3000/${propertyFilePaths[index] && propertyFilePaths[index][0]}`}
                     // alt={property.property_title}
                     className=" rounded-md mx-auto h-50 w-80 cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg"
+                    onClick={() => handlePropertyClick(property.id)} // On click, navigate to the details page with the property id
+
                     // onClick={() => handleCondoClick(condo.id)}
                   />
 
@@ -146,33 +152,44 @@ const TestDashboard = ({ properties, setProperties, setShowForm }) => {
                      alt={`${property.property_title} Image ${i + 1}`}
                      className="rounded-md w-full cursor-pointer hover:scale-105 transition-transform duration-300 hover:shadow-lg"
                    />
+                   
                  ))} */}
+
                   <div className="mt-2">
-                    <p className="text-xl font-medium">
+                    <p className="text-md font-medium">
                       {property.property_title}
                     </p>
                     <p className="text-xs">{property.address}</p>
-                    <p className="text-base text-blue-700 font-medium mt-2">
+                    <p className="text-base font-medium mt-2">
                       {toCurrency(property.monthly_price)}
                     </p>
                   </div>
-                  <div className="flex gap-4 justify-end mt-4">
-                    <button
-                      className="rounded bg-gray-500 text-white text-sm h-10 px-3 hover:bg-gray-700 cursor-pointer"
-                      onClick={() => {
-                        setFormOpen(true);
-                        setEditingProperty(property);
-                      }}
+                  <div className="flex gap-2 justify-between mt-4">
+                    <div
+                      className={`text-xs font-medium ${property?.availability == "available" ? "text-green-600" : "text-red-500"}  text-sm tracking-wider `}
                     >
-                      Edit
-                    </button>
-                    <button className=" rounded bg-red-500 text-white text-sm px-3 hover:bg-red-700 cursor-pointer">
-                      Delete
-                    </button>
-                    {/* <FaEye className="text-blue-500 text-xl" />
+                      {property.availability.toUpperCase()}
+                    </div>
+
+                    <div className="flex gap-2">
+                      <div
+                        className="text-sm cursor-pointer hover:font-medium"
+                        onClick={() => {
+                          setFormOpen(true);
+                          setEditingProperty(property);
+                        }}
+                      >
+                        Edit
+                      </div>
+                      <div className="text-red-500 text-sm hover:font-medium cursor-pointer">
+                        Delete
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* <FaEye className="text-blue-500 text-xl" />
                     <FaPen className="text-green-800 text-xl" />
                     <FaTrash className="text-red-500 text-xl" /> */}
-                  </div>
                 </div>
               ))}
             </div>
@@ -183,4 +200,4 @@ const TestDashboard = ({ properties, setProperties, setShowForm }) => {
   );
 };
 
-export default TestDashboard;
+export default PropertyList;

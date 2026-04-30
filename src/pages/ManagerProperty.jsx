@@ -5,9 +5,9 @@ import { FiMessageSquare } from "react-icons/fi";
 import { MdOutlineDashboard } from "react-icons/md";
 import Footer from "../component/Footer";
 import AddPropertyForm from "../component/AddPropertyForm";
-import TestDashboard from "./TestDashboard";
+import PropertyList from "./PropertyList";
 import { IoIosLogOut } from "react-icons/io";
-function ManagerPropertyList() {
+function ManagerProperty() {
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
@@ -24,8 +24,8 @@ function ManagerPropertyList() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <nav className="bg-white shadow-sm mb-8 text-gray-700">
-        <div className="mpx-4 sm:px-6 lg:px-8">
+      <nav className="bg-white shadow-sm text-gray-700">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="text-2xl font-semibold text-gray-900 flex items-center">
               <a href="/" className="hover:text-blue-500 flex items-center">
@@ -49,7 +49,7 @@ function ManagerPropertyList() {
               </a>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               <div className="relative">
                 <MdOutlineDashboard
                   className="text-xl"
@@ -121,7 +121,7 @@ function ManagerPropertyList() {
               setShowForm={setShowForm}
             />
           ) : (
-            <TestDashboard
+            <PropertyList
               properties={properties}
               setProperties={setProperties}
               setShowForm={setShowForm}
@@ -136,4 +136,4 @@ function ManagerPropertyList() {
     </div>
   );
 }
-export default ManagerPropertyList;
+export default ManagerProperty;

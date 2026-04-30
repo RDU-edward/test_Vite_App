@@ -7,9 +7,14 @@ import { FiMessageSquare } from "react-icons/fi";
 import { IoIosArrowBack, IoIosArrowForward, IoIosLogOut } from "react-icons/io";
 import Pagination from "../component/Pagination";
 import axios from "axios";
+import toCurrency from "../utils/toCurrency";
+import ReservationDetails from "../component/ReservationDetails";
 
 function ManagerDashboard() {
   const [reservations, setReservations] = useState([]);
+  const [reservationFilePaths, setReservationFilePaths] = useState([]);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+
   // const [reservations, setReservations] = useState(
   //   sampleData.getSampleReservations(),
   // );
@@ -31,6 +36,12 @@ function ManagerDashboard() {
       );
 
       setReservations(response.data);
+
+      // Parse the file paths for each property and store them in an array
+      const filePaths = response.data.map(
+        (reservations) => JSON.parse(reservations.files), // Assuming `files` is a JSON string in the database
+      );
+      setReservationFilePaths(filePaths); // Store the array of file paths
     } catch (error) {
       console.log(error);
     }
@@ -83,18 +94,18 @@ function ManagerDashboard() {
   };
 
   // Get status badge color
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "pending":
-        return "badge badge-warning";
-      case "approved":
-        return "badge badge-success";
-      case "rejected":
-        return "badge badge-error";
-      default:
-        return "badge badge-ghost";
-    }
-  };
+  // const getStatusColor = (status) => {
+  //   switch (status) {
+  //     case "pending":
+  //       return "badge badge-warning";
+  //     case "approved":
+  //       return "badge badge-success";
+  //     case "rejected":
+  //       return "badge badge-error";
+  //     default:
+  //       return "badge badge-ghost";
+  //   }
+  // };
 
   // const filteredReservations = getFilteredReservations();
 
@@ -103,39 +114,16 @@ function ManagerDashboard() {
     currentPage * reservationsPerPage,
   );
 
-  // console.log(filteredReservations);
-
-  // Pagination calculations
-  // const totalPages = Math.ceil(
-  //   filteredReservations.length / reservationsPerPage,
-  // );
-  // const filteredReservations = filteredReservations.slice(
-  //   (currentPage - 1) * reservationsPerPage,
-  //   currentPage * reservationsPerPage,
-  // );
-
-  // // Handle page change
-  // const goToPage = (page) => {
-  //   if (page < 1 || page > totalPages) return;
-  //   setCurrentPage(page);
-  // };
-
-  // // Create an array of page numbers for pagination buttons
-  // const pageNumbers = [];
-  // for (let i = 1; i <= totalPages; i++) {
-  //   pageNumbers.push(i);
-  // }
-
   if (!loggedUser) {
     return null;
   }
 
-  console.log(loggedUser);
+  console.log(selectedReservation);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navbar */}
-      <nav className="bg-white shadow-sm mb-8 text-gray-700">
+      <nav className="bg-white shadow-sm text-gray-700 ">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="text-2xl font-semibold text-gray-900 flex items-center">
@@ -160,13 +148,7 @@ function ManagerDashboard() {
               </a>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button
-                className="px-4 border py-2 text-sm text-gray-700  cursor-pointer hover:bg-gray-100"
-                onClick={() => navigate("/manager/property_list")}
-              >
-                View Properties
-              </button>
+            <div className="flex items-center gap-2 md:gap-4">
               {/* Message Icon */}
               <div className="relative">
                 <FiMessageSquare className="text-xl" />
@@ -224,231 +206,50 @@ function ManagerDashboard() {
         </div>
       </nav>
       <main className="flex-1 flex flex-col p-4 lg:p-6">
-        {/* Statistics Cards */}
-        {/* <section>
-          <div className="max-w-7xl mx-auto mb-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div
-                className={`${activeTab == "pending" ? "shadow-lg shadow-amber-600" : ""} card card-xs h-20 px-4 bg-warning text-error-content cursor-pointer  hover:scale-105 transition`}
-                // `card card-xs h-20 px-4 bg-warning text-error-content cursor-pointer  hover:scale-105 transition`}
-                onClick={() => setActiveTab("pending")}
-              >
-                <div className="card-body">
-                  <h2 className="card-title text-3xl font-bold">
-                    {reservations.filter((r) => r.status === "pending").length}
-                  </h2>
-                  <p className="text-sm">Pending Reservations</p>
-                </div>
-              </div>
-              <div
-                className={`${activeTab == "approved" ? "shadow-lg shadow-green-600" : ""} card card-xs h-20 px-4 bg-success text-success-content cursor-pointer shadow-lg hover:scale-105 transition`}
-                onClick={() => setActiveTab("approved")}
-              >
-                <div className="card-body">
-                  <h2 className="card-title text-3xl font-bold">
-                    {reservations.filter((r) => r.status === "approved").length}
-                  </h2>
-                  <p className="text-sm">Approved Reservations</p>
-                </div>
-              </div>
-              <div
-                className={`${activeTab == "rejected" ? "shadow-lg shadow-red-600" : ""} card card-xs h-20 px-4 bg-error text-error-content cursor-pointer shadow-lg hover:scale-105 transition`}
-                onClick={() => setActiveTab("rejected")}
-              >
-                <div className="card-body">
-                  <h2 className="card-title text-3xl font-bold">
-                    {reservations.filter((r) => r.status === "rejected").length}
-                  </h2>
-                  <p className="text-sm">Rejected Reservations</p>
-                </div>
-              </div>
-              <div
-                className={`${activeTab == "total" ? "shadow-lg shadow-blue-600" : ""} card card-xs h-20 px-4 bg-info text-info-content cursor-pointer shadow-lg hover:scale-105 transition`}
-                onClick={() => setActiveTab("total")}
-              >
-                <div className="card-body">
-                  <h2 className="card-title text-3xl font-bold">
-                    {reservations.length}
-                  </h2>
-                  <p className="text-sm">Total Reservations</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
-
         <section className="flex-1">
           {/* Reservations List */}
           <div className="max-w-7xl mx-auto  ">
-            <div className="font-bold text-xl mb-4">Total Paid Reservation</div>
+            <div className="flex flex-col md:flex-row justify-between mb-2">
+              <div className="flex font-bold text-xl items-end mb-4 md:mb-0">
+                Property Reservations
+              </div>
+              <div
+                className="p-2 text-sm border  text-gray-700  cursor-pointer hover:bg-gray-100"
+                onClick={() => navigate("/manager/property_list")}
+              >
+                View Properties
+              </div>
+            </div>
             {paginatedData.length > 0 ? (
-              <div className="space-y-4 mb-12 ">
+              <div className="mt-2 grid grid-cols-1  md:grid-cols-4 lg:grid-cols-4 gap-4">
                 {paginatedData.map((reservation, index) => (
                   <div
                     key={index}
-                    className="card card-xs bg-base-100 shadow-md hover:shadow-lg transition cursor-pointer self-start"
+                    className="border border-gray-300 shadow rounded-md hover:shadow-lg"
+                    onClick={() => setSelectedReservation(reservation)}
                   >
-                    {" "}
-                    <div
-                      className="card-body p-4"
-                      onClick={() =>
-                        setExpandedReservation(
-                          expandedReservation === reservation.id
-                            ? null
-                            : reservation.id,
-                        )
-                      }
-                    >
-                      <div className="flex justify-between items-start gap-4 flex-wrap">
-                        <div className="flex-1">
-                          <h3 className="card-title text-lg mb-2">
-                            {reservation.property_title}
-                          </h3>
-                          <p className="text-gray-600 text-lg mb-2">
-                            Client Name:{" "}
-                            <span className="font-semibold text-lg">
-                              {reservation.fullname}
-                            </span>
-                          </p>
-                          <div className="flex gap-2 items-center flex-wrap text-xs text-gray-600">
-                            <span>{reservation.movein_date}</span>
+                    <img
+                      src={`http://localhost:3000/${reservationFilePaths[index] && reservationFilePaths[index][0]}`}
+                      alt={`http://localhost:3000/${reservationFilePaths[index] && reservationFilePaths[index][0]}`}
+                      // alt={property.property_title}
+                      className=" rounded-t-md mx-auto h-50 w-full"
 
-                            <span
-                              className={" text-xs bg-green-500 p-1 rounded-md"}
-                            >
-                              {reservation.payment_status.toUpperCase()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xl font-bold text-primary">
-                            {reservation.monthly_price}
-                          </p>
-                        </div>
+                      // onClick={() => handleCondoClick(condo.id)}
+                    />
+
+                    <div className="mt-2 px-2">
+                      <p className="text-md font-medium text-gray-700">
+                        {reservation.property_title}
+                      </p>
+                      <p className="text-xs">{reservation.address}</p>
+                      <div className="flex  justify-between mb-2">
+                        <p className="text-sm text-gray-700 font-medium mt-2">
+                          {toCurrency(reservation.monthly_price)}
+                        </p>
+                        <p className="text-sm font-medium text-green-500 mt-2">
+                          {reservation.payment_status.toUpperCase()}
+                        </p>
                       </div>
-
-                      {/* Expanded Details */}
-                      {expandedReservation === reservation.id && (
-                        <div className="divider my-2"></div>
-                      )}
-                      {expandedReservation === reservation.id && (
-                        <div className="mt-4 space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Property Type
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.property_type}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Guest Email
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.guestEmail}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Guest Phone
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.guestPhone}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Number of Guests
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.numberOfGuests}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Check-in
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.checkInDate}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Check-out
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.checkOutDate}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Total Price
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.totalPrice}
-                              </p>
-                            </div>
-                            <div>
-                              <label className="font-semibold text-sm text-gray-700">
-                                Reservation Date
-                              </label>
-                              <p className="text-gray-600">
-                                {reservation.createdAt}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex gap-3 pt-4 flex-wrap">
-                            {reservation.status === "pending" && (
-                              <>
-                                <button
-                                  className="btn btn-success flex-1 min-w-fit"
-                                  onClick={() => handleApprove(reservation.id)}
-                                >
-                                  ✓ Approve
-                                </button>
-                                <button
-                                  className="btn btn-error flex-1 min-w-fit"
-                                  onClick={() => handleReject(reservation.id)}
-                                >
-                                  ✕ Reject
-                                </button>
-                              </>
-                            )}
-
-                            {reservation.status === "approved" && (
-                              <>
-                                <div className="alert alert-success flex-1">
-                                  <span>✓ Approved</span>
-                                </div>
-                                <button
-                                  className="btn btn-error"
-                                  onClick={() => handleReject(reservation.id)}
-                                >
-                                  Change to Rejected
-                                </button>
-                              </>
-                            )}
-
-                            {reservation.status === "rejected" && (
-                              <>
-                                <div className="alert alert-error flex-1">
-                                  <span>✕ Rejected</span>
-                                </div>
-                                <button
-                                  className="btn btn-success"
-                                  onClick={() => handleApprove(reservation.id)}
-                                >
-                                  Change to Approved
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
                 ))}
@@ -468,7 +269,7 @@ function ManagerDashboard() {
                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   ></path>
                 </svg>
-                <span>No {activeTab} reservations at the moment.</span>
+                <span>No reservations at the moment.</span>
               </div>
             )}
 
@@ -487,6 +288,14 @@ function ManagerDashboard() {
       <footer>
         <Footer />
       </footer>
+
+      {/* Reservation Details */}
+      {selectedReservation && (
+        <ReservationDetails
+          selectedReservation={selectedReservation}
+          setSelectedReservation={setSelectedReservation}
+        />
+      )}
     </div>
   );
 }

@@ -63,9 +63,11 @@ const ViewAllHouses = () => {
                   onClick={() => handlePropertyClick(property.id)} // On click, navigate to the details page with the property id
                 />
                 <div className="mt-2">
-                  <p className="text-lg font-bold">{property.property_title}</p>
-                  <p className="text-sm">{property.address}</p>
-                  <p className="text-md font-medium text-blue-600">
+                  <p className="text-md font-medium">
+                    {property.property_title}
+                  </p>
+                  <p className="text-xs">{property.address}</p>
+                  <p className="text-sm font-medium ">
                     {toCurrency(property.monthly_price)}
                   </p>
                 </div>

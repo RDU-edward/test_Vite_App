@@ -10,7 +10,7 @@ import ViewHouseDetails from "./pages/ViewHouseDetails";
 import ViewAllHouses from "./pages/ViewAllHouses";
 import UserDashboard from "./pages/UserDashboard";
 import AdminMainDashboard from "./pages/AdminMainDashboard";
-import ManagerPropertyList from "./pages/ManagerPropertyList";
+import ManagerProperty from "./pages/ManagerProperty";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import "normalize.css";
 
@@ -24,10 +24,7 @@ function App() {
         <Route path="/manager/dashboard" element={<ManagerDashboard />} />
         <Route path="/user/dashboard" element={<UserDashboard />} />
         <Route path="/admin/dashboard_main" element={<AdminMainDashboard />} />
-        <Route
-          path="/manager/property_list"
-          element={<ManagerPropertyList />}
-        />
+        <Route path="/manager/property_list" element={<ManagerProperty />} />
       </Routes>
     </Router>
   );

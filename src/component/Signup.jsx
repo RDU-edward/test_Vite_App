@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import { toast } from "react-toastify";
+import Loader from "../utils/Loader";
 
 const Signup = ({ toggleSignUpModal }) => {
   const [formData, setFormData] = useState({
@@ -19,10 +21,11 @@ const Signup = ({ toggleSignUpModal }) => {
   };
 
   // Handle file changes
-  const handleFileChange = (e) => {
+  const handleFileChange1 = (e) => {
     setFormData({ ...formData, files: [...e.target.files] }); // Update the files state with the selected files
   };
 
+  const [loading, setLoading] = useState(false);
   // const handleSubmit = (e) => {
   //   e.preventDefault();
 
@@ -73,6 +76,16 @@ const Signup = ({ toggleSignUpModal }) => {
 
   // console.log(formData.role);
 
+  const [fileName, setFileName] = useState("No file chosen");
+
+  const handleFileChange = (event) => {
+    if (event.target.files.length > 0) {
+      setFileName(event.target.files[0].name);
+    } else {
+      setFileName("No file chosen");
+    }
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -96,23 +109,36 @@ const Signup = ({ toggleSignUpModal }) => {
       });
       const result = await response.json();
       if (result.success === true) {
-        alert(result.message);
-        toggleSignUpModal();
+        setTimeout(() => {
+          toast.success(result.message);
+          toggleSignUpModal();
+        }, 3000);
       } else {
-        alert("Error Occurred");
+        setTimeout(() => {
+          toast.error("Error Occurred");
+          setLoading(false);
+        }, 3000);
       }
     } catch (err) {
       console.error("Error uploading files:", err);
+      setLoading(true);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-800/50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-2xl w-1/2">
+    <div className="fixed inset-0 bg-gray-800/50 flex justify-center items-center p-4 z-50 ">
+      {/* Loaders */}
+      {loading && (
+        <div className="z-70 bg-gray-800/50  absolute inset-0 flex justify-center items-center">
+          <Loader />
+        </div>
+      )}
+
+      <div className="bg-white p-6 rounded-2xl w-full  md:w-1/2 overflow-auto h-full">
         <div className="flex justify-end">
           <button
             onClick={toggleSignUpModal}
-            className="text-gray-700 text-2xl"
+            className="text-red-500 cursor-pointer hover:scale-150"
           >
             &times;
           </button>
@@ -142,15 +168,13 @@ const Signup = ({ toggleSignUpModal }) => {
             </a>
           </div>
         </div>
-        <h2 className="text-md text-gray-700 font-semibold mb-4 text-center">
-          Sign Up
-        </h2>
+
         <form
           onSubmit={handleSubmit}
           encType="multipart/form-data"
-          className="text-gray-800"
+          className="text-gray-800 h-auto"
         >
-          <div className="flex gap-4">
+          <div className="md:flex gap-4">
             <div className="mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700">
                 First Name
@@ -180,7 +204,7 @@ const Signup = ({ toggleSignUpModal }) => {
               />
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="md:flex gap-4">
             <div className="mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700">
                 Email
@@ -210,7 +234,7 @@ const Signup = ({ toggleSignUpModal }) => {
               />
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="md:flex gap-4">
             <div className="mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700">
                 Contact Number
@@ -225,9 +249,9 @@ const Signup = ({ toggleSignUpModal }) => {
                 required
               />
             </div>
-            <div className="mb-4 flex-1">
+            {/* <div className="mb-4 flex-1">
               <label className="block text-sm font-medium text-gray-700">
-                Attach File
+                Attach ID
               </label>
               <input
                 type="file"
@@ -235,6 +259,32 @@ const Signup = ({ toggleSignUpModal }) => {
                 onChange={handleFileChange}
                 className="w-full p-2 border border-gray-300 rounded"
               />
+            </div> */}
+            <div className="mb-4 flex-1">
+              <label className="block text-sm font-medium text-gray-700 ">
+                Attachment
+              </label>
+
+              <div className="flex items-center  border border-gray-300  rounded gap-4">
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  id="file-upload"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+                {/* Styled button */}
+                <label
+                  htmlFor="file-upload"
+                  className="px-4 py-2 bg-gray-500 text-white  cursor-pointer hover:bg--700 transition"
+                >
+                  Choose File
+                </label>
+
+                {/* Display file name */}
+                <span className="text-gray-700">{fileName}</span>
+              </div>
             </div>
           </div>
           <div className="mb-4">
@@ -250,7 +300,7 @@ const Signup = ({ toggleSignUpModal }) => {
               rows="3"
             />
           </div>
-          <div className="flex space-x-2 mb-2">
+          <div className="flex space-x-6 mb-4">
             <label
               className="relative flex items-center text-sm w-28 text-gray-700 border justify-center rounded-md cursor-pointer hover:bg-blue-200 transition-all p-2"
               htmlFor="role-manager"
@@ -289,9 +339,14 @@ const Signup = ({ toggleSignUpModal }) => {
               )}
             </label>
           </div>
-          <button type="submit" className="w-full bg-blue-500 p-2 rounded">
-            Sign Up
-          </button>
+          <div className="mt-12">
+            <button
+              type="submit"
+              className="w-full  bg-gray-700 text-white p-4 rounded hover:bg-gray-800"
+            >
+              Sign Up
+            </button>
+          </div>
         </form>
       </div>
     </div>

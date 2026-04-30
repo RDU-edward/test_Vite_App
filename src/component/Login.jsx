@@ -18,11 +18,11 @@ const Login = ({ toggleLoginModal }) => {
     setIsLoading(true); // Start loading
 
     // Validate inputs
-    if (!email || !password) {
-      setError("Please enter both email and password");
-      setIsLoading(false); // Stop loading on error
-      return;
-    }
+    // if (!email || !password) {
+    //   setError("Please enter both email and password");
+    //   setIsLoading(false); // Stop loading on error
+    //   return;
+    // }
 
     try {
       const response = await axios.post(
@@ -102,14 +102,17 @@ const Login = ({ toggleLoginModal }) => {
 
       <div className="bg-white p-6 rounded-2xl lg:w-1/3 w-full">
         <div className="flex justify-end">
-          <button onClick={toggleLoginModal} className="text-gray-700 text-2xl">
+          <button
+            onClick={toggleLoginModal}
+            className="text-red-500 cursor-pointer hover:scale-150"
+          >
             &times;
           </button>
         </div>
         <div>
           {" "}
           {/* Logo */}
-          <div className="text-2xl font-semibold text-gray-900 mb-4 flex justify-center">
+          <div className="text-2xl font-semibold text-gray-900  flex justify-center">
             <a href="/" className="hover:text-blue-500 flex items-center">
               <span className="mr-2">
                 <svg
@@ -165,9 +168,10 @@ const Login = ({ toggleLoginModal }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
+              required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700">
               Password
             </label>
@@ -178,11 +182,12 @@ const Login = ({ toggleLoginModal }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
+              required
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+            className="w-full bg-gray-700 text-white p-2 rounded hover:bg-gray-800 disabled:bg-gray-400"
             disabled={isLoading}
           >
             {isLoading ? "Logging in..." : "Continue"}
