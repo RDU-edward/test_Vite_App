@@ -29,55 +29,6 @@ const PropertyList = ({ properties, setProperties, setShowForm }) => {
     }
   };
 
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setEditData(properties[index]);
-    setEditPreviews(properties[index].images || []);
-  };
-
-  const handleEditFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    const newPreviews = files.map((file) => file);
-    setEditData({
-      ...editData,
-      images: [...(editData.images || []), ...files],
-    });
-    setEditPreviews([...editPreviews, ...files]);
-  };
-
-  const handleDropEdit = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const files = Array.from(e.dataTransfer.files);
-      setEditData({
-        ...editData,
-        images: [...(editData.images || []), ...files],
-      });
-      setEditPreviews([...editPreviews, ...files]);
-      e.dataTransfer.clearData();
-    }
-  };
-
-  const handleDragOverEdit = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const removeEditImage = (index) => {
-    const updatedImages = editData.images.filter((_, i) => i !== index);
-    const updatedPreviews = editPreviews.filter((_, i) => i !== index);
-    setEditData({ ...editData, images: updatedImages });
-    setEditPreviews(updatedPreviews);
-  };
-
-  const saveEdit = () => {
-    const updatedProperties = [...properties];
-    updatedProperties[editingIndex] = editData;
-    setProperties(updatedProperties);
-    setEditingIndex(null);
-  };
-
   const handlePropertyClick = (id) => {
     //Navigate to the house details page with the selected house ID
     navigate(`/viewHouseDetails/${id}`);

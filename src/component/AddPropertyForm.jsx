@@ -18,6 +18,7 @@ const AddPropertyForm = ({
   const [openGoogleMaps, setOpenGoogleMaps] = useState(false);
 
   const [formData, setFormData] = useState({
+    property_id: property?.id || null,
     manager_id: property?.manager_id || loggedUser?.id,
     property_title: property?.property_title || "",
     address: property?.address || "",
@@ -27,53 +28,60 @@ const AddPropertyForm = ({
     bathrooms: property?.bathrooms || "",
     description: property?.description || "",
     availability: property?.availability || "available",
-    floor_area: "",
-    lot_size: "",
-    year_built: "",
-    amenities: "",
+    floor_area: property?.floor_area || "",
+    lot_size: property?.lot_size || "",
+    year_built: property?.year_built || "",
+    amenities: property?.amenities
+      ? property.amenities.split(",").map((a) => a.trim())
+      : [],
+
     files: [],
     address_lat: "",
     address_long: "",
   });
 
-  const [imagePreviews, setImagePreviews] = useState(
-    property?.existingFiles || [], // For edit, show current images
+  const [existingFiles, setExistingFiles] = useState(
+    property?.files ? JSON.parse(property.files) : [],
   );
 
-  // const [imagePreviews, setImagePreviews] = useState([]);
-  // awiheyqwoieioqweio
+  const [newFiles, setNewFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([
+    ...(property?.files
+      ? JSON.parse(property.files).map((f) => `http://localhost:3000/${f}`)
+      : []),
+  ]);
+
   const handleFiles = (files) => {
-    const newFiles = Array.from(files);
-    setFormData((prev) => ({
-      ...prev,
-      files: [...prev.files, ...newFiles],
-    }));
-    const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+    const selectedFiles = Array.from(files);
+
+    setNewFiles((prev) => [...prev, ...selectedFiles]);
+
+    const newPreviews = selectedFiles.map((file) => URL.createObjectURL(file));
     setImagePreviews((prev) => [...prev, ...newPreviews]);
   };
 
   const handleChange = (e) => {
-    const { name, value, files, type, checked } = e.target;
+    const { name, value, type, checked, files } = e.target;
+
     if (files) {
       handleFiles(files);
-    } else if (
-      name === "monthly_price" ||
-      name === "bathrooms" ||
-      name === "bedrooms" ||
-      name === "year_built"
-    ) {
-      // Only allow numbers
-      const validValue = value.replace(/[^0-9.]/g, "");
-      setFormData({ ...formData, [name]: validValue });
-    } else if (type === "checkbox") {
+    } else if (type === "checkbox" && name === "amenities") {
       setFormData((prev) => {
         const newAmenities = checked
           ? [...prev.amenities, value]
           : prev.amenities.filter((a) => a !== value);
         return { ...prev, amenities: newAmenities };
       });
+    } else if (
+      name === "monthly_price" ||
+      name === "bathrooms" ||
+      name === "bedrooms" ||
+      name === "year_built"
+    ) {
+      const validValue = value.replace(/[^0-9.]/g, "");
+      setFormData((prev) => ({ ...prev, [name]: validValue }));
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -92,13 +100,18 @@ const AddPropertyForm = ({
   };
 
   const removeImage = (index) => {
-    setFormData((prev) => ({
-      ...prev,
-      files: prev.files.filter((_, i) => i !== index),
-    }));
+    if (index < existingFiles.length) {
+      // Remove from existing files (server files)
+      setExistingFiles((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      // Remove from new files
+      const newIndex = index - existingFiles.length;
+      setNewFiles((prev) => prev.filter((_, i) => i !== newIndex));
+    }
+
+    // Always remove from preview
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
-
   useEffect(() => {
     if (openGoogleMaps) {
       // If any modal is open, hide overflow
@@ -122,20 +135,26 @@ const AddPropertyForm = ({
       behavior: "smooth", // optional for smooth scrolling
     });
 
-    if (formData.files.length !== 5) {
+    if (imagePreviews.length < 5) {
       toast.error("Please upload exactly 5 images.");
       return;
     }
-    const formDataToSend = new FormData();
+    const data = new FormData();
+
+    // Append text fields
     Object.keys(formData).forEach((key) => {
       if (key !== "files") {
-        formDataToSend.append(key, formData[key]);
+        data.append(key, formData[key]);
       }
     });
 
-    formData.files.forEach((file) => {
-      formDataToSend.append("files", file);
+    // Append new files
+    newFiles.forEach((file) => {
+      data.append("files", file);
     });
+
+    // Send existing files separately (so backend keeps them)
+    data.append("existingFiles", JSON.stringify(existingFiles));
 
     if (formData.address_lat === "" || formData.address_long === "") {
       toast.error("Google Map Pin Location is required!");
@@ -148,7 +167,7 @@ const AddPropertyForm = ({
         ? `http://localhost:3000/api/property/update_property/${property.id}`
         : "http://localhost:3000/api/property/add_property";
 
-      const response = await axios.post(url, formDataToSend);
+      const response = await axios.post(url, data);
 
       if (response.data.success) {
         setTimeout(() => {
@@ -174,6 +193,10 @@ const AddPropertyForm = ({
           setImagePreviews([]);
           setShowForm(false);
         }, 3000);
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 4000);
       }
     } catch (error) {
       console.log(error);
@@ -230,7 +253,6 @@ const AddPropertyForm = ({
                 required
               />
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block font-medium">Property Type</label>
@@ -262,7 +284,6 @@ const AddPropertyForm = ({
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block font-medium">Bedrooms</label>
@@ -270,6 +291,7 @@ const AddPropertyForm = ({
                   type="text"
                   name="bedrooms"
                   value={formData.bedrooms}
+                  maxLength={2}
                   onChange={handleChange}
                   className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
@@ -281,12 +303,12 @@ const AddPropertyForm = ({
                   type="text"
                   name="bathrooms"
                   value={formData.bathrooms}
+                  maxLength={2}
                   onChange={handleChange}
                   className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block font-medium">Floor Area</label>
@@ -308,10 +330,10 @@ const AddPropertyForm = ({
                   value={formData.lot_size}
                   onChange={handleChange}
                   className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="xxx.sqm"
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block font-medium">Year Built</label>
@@ -319,6 +341,7 @@ const AddPropertyForm = ({
                   type="text"
                   name="year_built"
                   value={formData.year_built}
+                  maxLength={4}
                   onChange={handleChange}
                   className="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
@@ -336,7 +359,6 @@ const AddPropertyForm = ({
                 </select>
               </div>
             </div>
-
             <div>
               <label className="block font-medium">Description</label>
               <textarea
@@ -347,7 +369,6 @@ const AddPropertyForm = ({
                 required
               />
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block font-medium">Address</label>
@@ -381,6 +402,7 @@ const AddPropertyForm = ({
                       name="amenities"
                       value={amenity.name}
                       onChange={handleChange}
+                      checked={formData.amenities.includes(amenity.name)}
                     />
                     <span> {amenity.icon} </span> {amenity.name}
                   </label>
@@ -432,21 +454,20 @@ const AddPropertyForm = ({
               </div>
             </div>
             {/* Drag & Drop Image Upload */}
-
             {/* Image Previews */}
             {imagePreviews.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {imagePreviews.map((src, index) => (
                   <div key={index} className="relative w-24 h-24">
                     <img
-                      src={src}
+                      src={src} // already has full URL for existing files or object URL for new files
                       alt={`Preview ${index}`}
                       className="w-full h-full object-cover rounded"
                     />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}
-                      className="absolute top-1 right-1 bg-red-500  rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      className="absolute top-1 right-1 bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-xs"
                     >
                       ×
                     </button>
@@ -454,7 +475,6 @@ const AddPropertyForm = ({
                 ))}
               </div>
             )}
-
             <button
               type="submit"
               className="w-full text-white bg-gray-500 hover:bg-gray-600 font-semibold py-3 px-4 rounded mt-4"

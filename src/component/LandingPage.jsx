@@ -93,7 +93,9 @@ function LandingPage() {
     <>
       <div className="min-h-screen w-full bg-gray-50 ">
         {/* Navbar */}
-        <Navbar />
+        <div className="fixed w-full top-0 z-50">
+          <Navbar />
+        </div>
 
         {/* Hero Section */}
         <section

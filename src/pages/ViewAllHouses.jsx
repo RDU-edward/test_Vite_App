@@ -77,14 +77,13 @@ const ViewAllHouses = () => {
         </section>
 
         {/* Pagination Controls */}
-
-        <Pagination
-          setCurrentPage={setCurrentPage}
-          currentPage={currentPage}
-          data={properties}
-          totalPerPage={propertyPerPage}
-        />
       </main>
+      <Pagination
+        setCurrentPage={setCurrentPage}
+        currentPage={currentPage}
+        data={properties}
+        totalPerPage={propertyPerPage}
+      />
 
       <footer>
         <Footer />

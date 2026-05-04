@@ -9,7 +9,6 @@ import toCurrency from "../utils/toCurrency";
 
 function UserDashboard() {
   const [reservations, setReservations] = useState([]);
-  const [activeTab, setActiveTab] = useState("pending");
   const [expandedReservation, setExpandedReservation] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -17,34 +16,7 @@ function UserDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const reservationsPerPage = 1;
 
-  // // Check if user is logged in
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("loggedInUser");
-  //   if (!storedUser) {
-  //     navigate("/");
-  //   } else {
-  //     setLoggedInUser(JSON.parse(storedUser));
-  //   }
-  // }, [navigate]);
-
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser")); // // Load user reservations
-  // useEffect(() => {
-  //   if (loggedInUser) {
-  //     const allReservations = sampleData.getSampleReservations();
-  //     // For demo purposes, show all sample reservations
-  //     // In a real app, filter by user email: allReservations.filter(res => res.guestEmail === loggedInUser.email)
-  //     setReservations(allReservations);
-  //   }
-  // }, [loggedInUser]);
-
-  // // Filter reservations by status
-  // const getFilteredReservations = () => {
-  //   return reservations.filter((res) => res.status === activeTab);
-  // };
-
-  // if (!loggedInUser) {
-  //   return <div>Loading...</div>;
-  // }
 
   const getReservations = async () => {
     try {
@@ -87,30 +59,6 @@ function UserDashboard() {
       <main className="flex-1 flex flex-col">
         <section className="flex-1 p-6">
           <div className="px-4 py-6 sm:px-0 ">
-            {/* <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
-                {["pending", "approved", "rejected"].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => {
-                      setActiveTab(tab);
-                      setCurrentPage(1);
-                    }}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === tab
-                        ? "border-indigo-500 text-indigo-600"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                    }`}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)} Reservations
-                    <span className="ml-2 py-0.5 px-2 rounded-full text-xs bg-gray-100 text-gray-600">
-                      {reservations.filter((res) => res.status === tab).length}
-                    </span>
-                  </button>
-                ))}
-              </nav>
-            </div> */}
-
             <div>
               <h2 className="text-2xl font-bold mb-4">My Reservations</h2>
             </div>
@@ -133,10 +81,10 @@ function UserDashboard() {
                     />
                   </svg>
                   <h3 className="mt-2 text-sm font-medium text-gray-900">
-                    No {activeTab} reservations
+                    No reservations
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">
-                    You don't have any {activeTab} reservations at the moment.
+                    You don't have any reservations at the moment.
                   </p>
                 </div>
               ) : (

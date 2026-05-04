@@ -27,17 +27,24 @@ import GoogleMaps from "../component/GoogleMaps";
 import GetPropertyMapLocation from "../component/GetPropertyMapLocation";
 import amenities from "../data/amenities";
 import default_avatar from "../assets/ihomesLogo.png";
+import Login from "../component/Login";
+import ShowAllPhotos from "../component/ShowAllPhotos";
 
 const ViewHouseDetails = () => {
   const { id } = useParams();
   // const stripe = useStripe();
   // const elements = useElements();
 
+  const [openLoginModal, setOpenLoginModal] = useState(false);
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
   const navigate = useNavigate();
   const [details, setDetails] = useState();
   const [propertyFiles, setPropertyFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
+
+  const toggleLoginModal = () => setOpenLoginModal(!openLoginModal);
 
   const [clientData, setclientData] = useState({
     property_id: id,
@@ -78,6 +85,10 @@ const ViewHouseDetails = () => {
   const payInStripe = async (e) => {
     e.preventDefault();
 
+    if (!loggedUser) {
+      setOpenLoginModal(true);
+    }
+
     setLoading(true);
     const { data } = await axios.post(
       "http://localhost:3000/create-payment-intent",
@@ -109,7 +120,23 @@ const ViewHouseDetails = () => {
     selectedAmenities.includes(amenity.name),
   );
 
+  useEffect(() => {
+    if (showAllPhotos) {
+      // If any modal is open, hide overflow
+      document.body.style.overflow = "hidden";
+    } else {
+      // If no modal is open, allow scrolling
+      document.body.style.overflow = "auto";
+    }
+
+    // Cleanup when component unmounts
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showAllPhotos]);
+
   console.log(details);
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <Navbar />
@@ -128,7 +155,10 @@ const ViewHouseDetails = () => {
           />
 
           <div className="relative grid grid-cols-2 gap-3">
-            <div className="absolute flex gap-2 right-20 bottom-5 py-2 px-2 bg-slate-50/90 text-xs cursor-pointer hover:bg-slate-50 hover:scale-110 ">
+            <div
+              className="absolute flex gap-2 right-20 bottom-5 py-2 px-2 bg-slate-50/90 text-xs cursor-pointer hover:bg-slate-50 hover:scale-110 "
+              onClick={() => setShowAllPhotos(true)}
+            >
               <FaImages className="text-xl" /> Show All Photos
             </div>
             {/* {propertyFiles.map((img, i) => ( */}
@@ -298,6 +328,18 @@ const ViewHouseDetails = () => {
       </div>
 
       <Footer />
+
+      {/* Login Modal */}
+      {openLoginModal && <Login toggleLoginModal={toggleLoginModal} />}
+
+      {/* Show All Photo Modal */}
+
+      {showAllPhotos && (
+        <ShowAllPhotos
+          images={details?.files}
+          setShowAllPhotos={setShowAllPhotos}
+        />
+      )}
     </div>
   );
 };
