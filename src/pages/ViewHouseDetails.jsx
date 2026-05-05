@@ -19,7 +19,7 @@ import { FaImages, FaLocationPin } from "react-icons/fa6";
 import Footer from "../component/Footer";
 import Navbar from "../component/Navbar";
 import axios from "axios";
-// import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import toCurrency from "../utils/toCurrency";
 import { toast } from "react-toastify";
 import Loader from "../utils/Loader";
@@ -32,8 +32,8 @@ import ShowAllPhotos from "../component/ShowAllPhotos";
 
 const ViewHouseDetails = () => {
   const { id } = useParams();
-  // const stripe = useStripe();
-  // const elements = useElements();
+  const stripe = useStripe();
+  const elements = useElements();
 
   const [openLoginModal, setOpenLoginModal] = useState(false);
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -60,7 +60,9 @@ const ViewHouseDetails = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get(`http://localhost:3000/api/property/${id}`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}property/${id}`,
+      );
       setDetails(res.data[0]);
       setPropertyFiles(JSON.parse(res.data[0].files));
     };
@@ -73,7 +75,7 @@ const ViewHouseDetails = () => {
 
   const insertReservation = async () => {
     await axios.post(
-      "http://localhost:3000/api/reservation/create_reservation",
+      `${import.meta.env.VITE_API_URL}reservation/create_reservation`,
       {
         ...clientData,
         amount_paid: details?.monthly_price,
@@ -300,7 +302,7 @@ const ViewHouseDetails = () => {
               />
 
               <div className="p-3 border rounded-lg">
-                {/* <CardElement /> */}
+                <CardElement />
               </div>
 
               <button

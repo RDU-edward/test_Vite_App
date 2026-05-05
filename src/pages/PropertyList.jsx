@@ -41,7 +41,7 @@ const PropertyList = ({ properties, setProperties, setShowForm }) => {
   const getAllPropertyByManagerId = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/property/manager/${loggedUser.id}`,
+        `${import.meta.env.VITE_API_URL}property/manager/${loggedUser.id}`,
       );
       setProperties1(response.data);
 

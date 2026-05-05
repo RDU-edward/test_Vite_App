@@ -26,55 +26,6 @@ const Signup = ({ toggleSignUpModal }) => {
   };
 
   const [loading, setLoading] = useState(false);
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   // Basic validation
-  //   if (
-  //     !formData.firstname ||
-  //     !formData.lastname ||
-  //     !formData.email ||
-  //     !formData.role ||
-  //     !formData.password ||
-  //     !formData.contact_number ||
-  //     !formData.address
-  //   ) {
-  //     alert("Please fill in all required fields.");
-  //     return;
-  //   }
-
-  //   // Check if email already exists
-  //   const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-  //   const emailExists = existingUsers.some(
-  //     (user) => user.email === formData.email,
-  //   );
-  //   if (emailExists) {
-  //     alert("An account with this email already exists.");
-  //     return;
-  //   }
-
-  //   // Prepare user data (exclude file for now, as localStorage can't store files directly)
-  //   const userData = {
-  //     firstname: formData.firstname,
-  //     lastname: formData.lastname,
-  //     email: formData.email,
-  //     role: formData.role,
-  //     password: formData.password, // Note: In a real app, hash the password
-  //     contact_number: formData.contact_number,
-  //     address: formData.address,
-  //     fileName: formData.file ? formData.file.name : null,
-  //     status: formData.role === "manager" ? "Pending" : "Active",
-  //   };
-
-  //   // Save to localStorage
-  //   existingUsers.push(userData);
-  //   localStorage.setItem("users", JSON.stringify(existingUsers));
-
-  //   alert("Signup successful!");
-  //   toggleSignUpModal(); // Close the modal
-  // };
-
-  // console.log(formData.role);
 
   const [fileName, setFileName] = useState("No file chosen");
 
@@ -102,14 +53,20 @@ const Signup = ({ toggleSignUpModal }) => {
       formDataToSend.append("files", file); // 'files' is the name used for the input field
     });
 
+    setLoading(true);
+
     try {
-      const response = await fetch("http://localhost:3000/api/user/create", {
-        method: "POST",
-        body: formDataToSend,
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}user/create`,
+        {
+          method: "POST",
+          body: formDataToSend,
+        },
+      );
       const result = await response.json();
       if (result.success === true) {
         setTimeout(() => {
+          setLoading(false);
           toast.success(result.message);
           toggleSignUpModal();
         }, 3000);
@@ -121,7 +78,7 @@ const Signup = ({ toggleSignUpModal }) => {
       }
     } catch (err) {
       console.error("Error uploading files:", err);
-      setLoading(true);
+      setLoading(false);
     }
   };
 

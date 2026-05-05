@@ -32,7 +32,7 @@ function ManagerDashboard() {
   const getReservations = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/reservation/manager/${loggedUser.id}`,
+        `${import.meta.env.VITE_API_URL}reservation/manager/${loggedUser.id}`,
       );
 
       setReservations(response.data);

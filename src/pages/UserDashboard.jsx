@@ -21,7 +21,7 @@ function UserDashboard() {
   const getReservations = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/reservation/${loggedUser.id}`,
+        `${import.meta.env.VITE_API_URL}reservation/${loggedUser.id}`,
       );
       setReservations(response.data);
     } catch (error) {

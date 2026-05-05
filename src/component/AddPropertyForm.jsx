@@ -164,8 +164,8 @@ const AddPropertyForm = ({
     try {
       setLoading(true);
       const url = property
-        ? `http://localhost:3000/api/property/update_property/${property.id}`
-        : "http://localhost:3000/api/property/add_property";
+        ? `${import.meta.env.VITE_API_URL}property/update_property/${property.id}`
+        : `${import.meta.env.VITE_API_URL}property/add_property`;
 
       const response = await axios.post(url, data);
 

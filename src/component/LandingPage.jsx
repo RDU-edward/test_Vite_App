@@ -96,7 +96,6 @@ function LandingPage() {
         <div className="fixed w-full top-0 z-50">
           <Navbar />
         </div>
-
         {/* Hero Section */}
         <section
           className="relative w-full bg-cover bg-center h-96 flex items-center justify-center transition-all duration-1000"
@@ -113,9 +112,8 @@ function LandingPage() {
             </p>
           </div>
         </section>
-
         {/* Popular House */}
-        <section className="p-12 text-gray-700 bg-gray-100  ">
+        <section className="p-12 text-gray-700 bg-gray-100 ">
           <div className="text-xl font-semibold flex items-center mb-6 gap-2">
             Available Houses for Lease
             <span className="mt-2">
@@ -197,10 +195,8 @@ function LandingPage() {
             </div>
           </div>
         </section>
-
         {/* Footer */}
         <Footer />
-
         {/* Log In Modal */}
         {isLoginModalOpen && (
           <>

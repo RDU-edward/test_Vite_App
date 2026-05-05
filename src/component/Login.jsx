@@ -26,7 +26,7 @@ const Login = ({ toggleLoginModal }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/user/login",
+        `${import.meta.env.VITE_API_URL}user/login`,
         {
           email,
           password,
@@ -36,8 +36,10 @@ const Login = ({ toggleLoginModal }) => {
       console.log(response.data);
 
       if (response.data.success === false) {
-        toast.error(response.data.message);
-        setIsLoading(false);
+        setTimeout(() => {
+          toast.error(response.data.message);
+          setIsLoading(false);
+        }, 3000);
       }
       const admin = response.data.user.role === "admin";
       const manager = response.data.user.role === "manager";
@@ -68,7 +70,7 @@ const Login = ({ toggleLoginModal }) => {
 
           // Close modal and navigate to admin dashboard
           toggleLoginModal();
-          navigate("/manager/dashboard");
+          navigate("/");
           return;
         }, 3000);
       }

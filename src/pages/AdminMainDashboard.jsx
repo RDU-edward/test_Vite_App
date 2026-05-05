@@ -21,7 +21,7 @@ const AdminMainDashboard = () => {
   const getAllUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3000/api/user/all-users",
+        `${import.meta.env.VITE_API_URL}user/all-users`,
       );
       setUsers(response.data); // updates your state with the fetched users
       console.log(response); // logs the full response object
@@ -110,7 +110,7 @@ const AdminMainDashboard = () => {
     try {
       setLoading(true);
       const response = await axios.put(
-        `http://localhost:3000/api/user/update/${id}`,
+        `${import.meta.env.VITE_API_URL}user/update/${id}`,
         { status: newStatus },
       );
 
