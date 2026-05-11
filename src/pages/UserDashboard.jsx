@@ -14,7 +14,7 @@ function UserDashboard() {
 
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const reservationsPerPage = 1;
+  const reservationsPerPage = 4;
 
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser")); // // Load user reservations
 
@@ -158,18 +158,18 @@ function UserDashboard() {
                                 </div>
                                 <div>
                                   <dt className="text-sm font-medium text-gray-500">
-                                    Check-out Date
+                                    Payment Status
                                   </dt>
                                   <dd className="mt-1 text-sm text-gray-900">
-                                    {reservation.checkOutDate}
+                                    {reservation.payment_status}
                                   </dd>
                                 </div>
                                 <div>
                                   <dt className="text-sm font-medium text-gray-500">
-                                    Total Price
+                                    Amount Paid
                                   </dt>
                                   <dd className="mt-1 text-sm text-gray-900">
-                                    {toCurrency(reservation.monthly_price)}
+                                    {toCurrency(reservation.amount_paid)}
                                   </dd>
                                 </div>
                                 <div>

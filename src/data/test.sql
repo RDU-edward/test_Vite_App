@@ -45,6 +45,7 @@ DELIMITER //
 CREATE PROCEDURE `createReservation`(
 	IN `_property_id` INT,
 	IN `_manager_id` INT,
+	IN `_manager_email` VARCHAR(50),
 	IN `_tenant_id` INT,
 	IN `_fullname` VARCHAR(50),
 	IN `_contact_number` VARCHAR(50),
@@ -73,6 +74,7 @@ END IF;
 INSERT INTO node_customer_reservation (
     property_id,
     manager_id,
+    manager_email,
     tenant_id,
     fullname,
     contact_number,
@@ -85,6 +87,7 @@ INSERT INTO node_customer_reservation (
 ) VALUES (
     _property_id,
     _manager_id,
+    _manager_email,
     _tenant_id,
     _fullname,
     _contact_number,
@@ -194,6 +197,7 @@ CREATE TABLE IF NOT EXISTS `node_customer_reservation` (
   `property_id` int DEFAULT NULL,
   `tenant_id` int DEFAULT NULL,
   `manager_id` int DEFAULT NULL,
+  `manager_email` varchar(50) DEFAULT NULL,
   `fullname` varchar(50) DEFAULT NULL,
   `contact_number` varchar(50) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
@@ -203,17 +207,18 @@ CREATE TABLE IF NOT EXISTS `node_customer_reservation` (
   `payment_status` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,
   `created_at` date DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 
--- Dumping data for table test_kyc.node_customer_reservation: ~7 rows (approximately)
-INSERT INTO `node_customer_reservation` (`id`, `property_id`, `tenant_id`, `manager_id`, `fullname`, `contact_number`, `email`, `movein_date`, `total_occupants`, `amount_paid`, `payment_status`, `created_at`) VALUES
-	(8, 22, 28, 23, 'JackAnderson', '93248383', 'jand@gmail.com', '2026-04-13', 12, '20823', 'paid', '2026-04-25'),
-	(9, 22, 28, 23, 'JackAnderson', '93248383', 'jand@gmail.com', '2026-04-30', 13, '23921', 'paid', '2026-04-25'),
-	(10, 22, 28, 24, 'JackAnderson', '93248383', 'jand@gmail.com', '2026-04-14', 20, '34422', 'paid', '2026-04-25'),
-	(11, 22, 29, 24, 'JackAnderson', '93248383', 'jand@gmail.com', '2026-04-14', 20, '12332', 'paid', '2026-04-25'),
-	(12, 22, 29, 25, 'JackAnderson', '93248383', 'jand@gmail.com', '2026-04-14', 20, '34234', 'paid', '2026-04-25'),
-	(13, 26, 23, 23, 'John Doe', '93248383', 'jdoe@mail.com', '2026-04-28', 21, '121', 'paid', '2026-04-26'),
-	(14, 27, 23, 23, 'John Doe', '93248383', 'jdoe@mail.com', '2026-04-29', 23, '121', 'paid', '2026-04-26');
+-- Dumping data for table test_kyc.node_customer_reservation: ~0 rows (approximately)
+INSERT INTO `node_customer_reservation` (`id`, `property_id`, `tenant_id`, `manager_id`, `manager_email`, `fullname`, `contact_number`, `email`, `movein_date`, `total_occupants`, `amount_paid`, `payment_status`, `created_at`) VALUES
+	(15, 32, 23, 32, NULL, 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-12', 1, '210000', 'paid', '2026-05-11'),
+	(16, 31, 23, 32, NULL, 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-19', 12, '926.0999999999999', 'paid', '2026-05-11'),
+	(17, 31, 23, 32, NULL, 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-13', 12, '926.0999999999999', 'paid', '2026-05-11'),
+	(18, 34, 23, 32, NULL, 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-11', 12, '926.0999999999999', 'paid', '2026-05-11'),
+	(19, 36, 23, 32, NULL, 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-11', -3, '926.0999999999999', 'paid', '2026-05-11'),
+	(20, 35, 23, 32, 'edwardcatapan@gmail.com', 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-04', 12, '926.0999999999999', 'paid', '2026-05-11'),
+	(21, 35, 23, 32, 'edwardcatapan@gmail.com', 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-11', 12, '926.0999999999999', 'paid', '2026-05-11'),
+	(22, 34, 23, 32, 'edwardcatapan@gmail.com', 'John Doe', '93248383', 'xdwardd@gmail.com', '2026-05-20', 12, '926.0999999999999', 'paid', '2026-05-11');
 
 -- Dumping structure for table test_kyc.node_property
 CREATE TABLE IF NOT EXISTS `node_property` (
@@ -235,21 +240,19 @@ CREATE TABLE IF NOT EXISTS `node_property` (
   `address_lat` double DEFAULT NULL,
   `address_long` double DEFAULT NULL,
   `created_at` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=latin1;
 
--- Dumping data for table test_kyc.node_property: ~9 rows (approximately)
-INSERT INTO `node_property` (`id`, `manager_id`, `property_title`, `address`, `property_type`, `monthly_price`, `bedrooms`, `bathrooms`, `description`, `availability`, `floor_area`, `lot_size`, `year_built`, `amenities`, `files`, `address_lat`, `address_long`, `created_at`) VALUES
-	(22, 23, 'Modern Family Home', '123 Main St, Anytown, Cebu City', 'apartment', '12782', 3, 2, 'A beautiful 4-bedroom family home with a spacious ', 'available', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1776923977822.jpg","uploads/1776923977837.jpg"]', 123.90695205313199, 123.90695205313199, '2026-04-23'),
-	(23, 23, 'Luxury Waterfront Villa', '45 Ocean Blvd, Lapu-Lapu City', 'apartment', '3213213', 10, 2, 'A luxurious 5-bedroom villa with panoramic ocean v', 'available', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1776924202822.jpg","uploads/1776924202849.png"]', 123.90695205313199, 123.90695205313199, '2026-04-23'),
-	(24, 24, 'Cozy Cottage Retreat', '89 Pine Ave, Tagbilaran City, Bohol', 'house', '1223212', 2, 1, 'A charming 2-bedroom cottage in a peaceful forest ', 'available', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1776925688223.jpg","uploads/1776925688246.jpg"]', 123.90695205313199, 123.90695205313199, '2026-04-23'),
-	(25, 23, 'Modern Family Home', 'Maribago Lapu-Lapu City', 'studio', '23000', 1, 23, 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Harum quae itaque laborum non illum distinctio omnis voluptate animi error in.\r\n', 'available', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1777158670487.jpg","uploads/1777158670521.jpg","uploads/1777158670538.jpg","uploads/1777158670561.jpg","uploads/1777158670582.jpg"]', 123.90695205313199, 123.90695205313199, '2026-04-26'),
-	(26, 23, 'New Tree House', 'test', 'house', '121', 2, 3, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'unavailable', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1777170079409.jpg","uploads/1777170079465.jpg","uploads/1777170079476.jpg","uploads/1777170079489.jpg","uploads/1777170079507.jpg"]', 123.90695205313199, 123.90695205313199, '2026-04-26'),
-	(27, 23, 'New Tree House', 'test', 'studio', '121', 2, 3, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'unavailable', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1777170154072.jpg","uploads/1777170154135.jpg","uploads/1777170154168.jpg","uploads/1777170154175.jpg","uploads/1777170154195.jpg"]', 123.90695205313199, 123.90695205313199, '2026-04-26'),
-	(28, 23, 'Town House Newly Funrnished', 'Bogo Cebu', 'house', '232322', 1, 1, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'available', '2213', '2213', '2213', 'Pool, Wifi, Parking, Pet Friendly', '["uploads/1777170332653.jpg","uploads/1777170332694.jpg","uploads/1777170332706.jpg","uploads/1777170332712.jpg","uploads/1777170332746.jpg"]', 123.90695205313199, 123.90695205313199, '2026-04-26'),
-	(29, 23, 'Town House Newly Funrnishedwewqe', 'Bogo Cebu', 'studio', '232322', 1, 1, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'available', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1777170532480.jpg","uploads/1777170532519.jpg","uploads/1777170532531.jpg","uploads/1777170532550.jpg","uploads/1777170532559.jpg"]', 10.314208982388605, 123.90695205313199, '2026-04-26'),
-	(30, 23, 'asdf', 'Hipodromo Village, Cebu City', 'house', '123222', 2, 3, ' A trendy 1-bedroom loft in the heart of Cebu\'s bustling city center, ideal for young professionals.\r\n', 'unavailable', '2213', '2213', '2213', 'Pool, Wifi, Parking', '["uploads/1777449711797.jpg","uploads/1777449711849.jpg","uploads/1777449711862.jpg","uploads/1777449711869.jpg","uploads/1777449711882.jpg"]', 10.314208982388605, 123.90695205313199, '2026-04-29'),
-	(31, 23, 'Town House Newly Funrnishedwewqe', '123 Main St, Anytown, Cebu City', 'house', '1323', 12, 2, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'available', '2213', '22', '213', 'Pool, Wifi, Parking, Laundry, Pet Friendly', '["uploads/1777522075415.jpg","uploads/1777522075441.jpg","uploads/1777522075504.png","uploads/1777522075517.jpg","uploads/1777522075529.jpg"]', 10.315716902747281, 123.90266052034525, '2026-04-30');
+-- Dumping data for table test_kyc.node_property: ~7 rows (approximately)
+INSERT INTO `node_property` (`id`, `manager_id`, `property_title`, `address`, `property_type`, `monthly_price`, `bedrooms`, `bathrooms`, `description`, `availability`, `floor_area`, `lot_size`, `year_built`, `amenities`, `files`, `address_lat`, `address_long`, `created_at`, `updated_at`) VALUES
+	(31, 32, 'Town House Newly Funrnish1', '123 Main St, Anytown, Cebu City', 'house', '1323.00', 12, 2, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'available', '2213', '22', '213', 'Pool,Wifi,Parking,Laundry,Pet Friendly,Spa', '["uploads/1777871162593.jpg","uploads/1777871162617.jpg","uploads/1777871162635.jpg","uploads/1777871162650.jpg","uploads/1777871162657.jpg"]', 10.312, 123.9076, '2026-04-30', '2026-05-04'),
+	(32, 32, 'Luxury Waterfront Villa', '45 Ocean Blvd, Lapu-Lapu City', 'house', '300000', 4, 3, 'A luxurious 5-bedroom villa with panoramic ocean views and an infinity pool', 'available', '123', '3255', '', 'Pool,Restaurant,Pet Friendly,Air Conditioning', '["uploads/1777871546793.jpg","uploads/1777871546819.jpg","uploads/1777871546828.jpg","uploads/1777871546838.jpg","uploads/1777871546848.jpg","uploads/1777871546856.jpg"]', 10.30017757418692, 124.0045886779785, '2026-05-04', NULL),
+	(33, 32, 'Urban Loft Apartment', '123 Main St, Anytown, Cebu City', 'apartment', '8500', 2, 2, 'A trendy 1-bedroom loft in the heart of Cebu\'s bustling city center, ideal for young professionals.', 'available', '232', '124', '2011', 'Gym,Air Conditioning,Wifi,Pet Friendly', '["uploads/1777871911160.jpg","uploads/1777871911187.jpg","uploads/1777871911211.jpg","uploads/1777871911218.jpg","uploads/1777871911227.jpg"]', 10.352868392376836, 123.91429479370116, '2026-05-04', NULL),
+	(34, 32, 'Newly Funrnish1', '123 Main St, Anytown, Cebu City', 'house', '1323.00', 12, 2, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'unavailable', '2213', '22', '213', 'Pool,Wifi,Parking,Laundry,Pet Friendly,Spa', '["uploads/1777871162593.jpg","uploads/1777871162617.jpg","uploads/1777871162635.jpg","uploads/1777871162650.jpg","uploads/1777871162657.jpg"]', 10.312, 123.9076, '2026-04-30', '2026-05-04'),
+	(35, 32, 'Town House Newly', '123 Main St, Anytown, Cebu City', 'house', '1323.00', 12, 2, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'unavailable', '2213', '22', '213', 'Pool,Wifi,Parking,Laundry,Pet Friendly,Spa', '["uploads/1777871162593.jpg","uploads/1777871162617.jpg","uploads/1777871162635.jpg","uploads/1777871162650.jpg","uploads/1777871162657.jpg"]', 10.312, 123.9076, '2026-04-30', '2026-05-04'),
+	(36, 32, 'Town House N24234', '123 Main St, Anytown, Cebu City', 'house', '1323.00', 12, 2, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'available', '2213', '22', '213', 'Pool,Wifi,Parking,Laundry,Pet Friendly,Spa', '["uploads/1777871162593.jpg","uploads/1777871162617.jpg","uploads/1777871162635.jpg","uploads/1777871162650.jpg","uploads/1777871162657.jpg"]', 10.312, 123.9076, '2026-04-30', '2026-05-04'),
+	(37, 32, 'Town House Newly 234', '123 Main St, Anytown, Cebu City', 'house', '1323.00', 12, 2, 'A sprawling 6-bedroom estate with lush gardens, perfect for a large family or entertaining guests.', 'available', '2213', '22', '213', 'Pool,Wifi,Parking,Laundry,Pet Friendly,Spa', '["uploads/1777871162593.jpg","uploads/1777871162617.jpg","uploads/1777871162635.jpg","uploads/1777871162650.jpg","uploads/1777871162657.jpg"]', 10.312, 123.9076, '2026-04-30', '2026-05-04');
 
 -- Dumping structure for table test_kyc.node_user
 CREATE TABLE IF NOT EXISTS `node_user` (
@@ -266,26 +269,69 @@ CREATE TABLE IF NOT EXISTS `node_user` (
   `is_deleted` int NOT NULL,
   `created_at` date NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=latin1;
 
--- Dumping data for table test_kyc.node_user: ~6 rows (approximately)
+-- Dumping data for table test_kyc.node_user: ~10 rows (approximately)
 INSERT INTO `node_user` (`id`, `firstname`, `lastname`, `email`, `password`, `contact_number`, `address`, `role`, `files`, `status`, `is_deleted`, `created_at`) VALUES
-	(23, 'John', 'Doe', 'jdoe@mail.com', '$2b$10$Dj/E9EhH82Tl0YmfuGebi.yC4H0tN/bGEjTA0Ucr5qlBd.iUn/FXm', 93248383, 'test', 'manager', '["uploads\\\\1776840737093.png"]', 'active', 0, '2026-04-22'),
-	(24, 'Admin', 'Super Admin', 'admin@ihomes.com', '$2b$10$Dj/E9EhH82Tl0YmfuGebi.yC4H0tN/bGEjTA0Ucr5qlBd.iUn/FXm', 93248383, 'test', 'admin', '["uploads\\\\1776840737093.png"]', 'active', 0, '2026-04-22'),
-	(25, 'Wii', 'Smith', 'wsmith@mail.com', '$2b$10$wpz0JzEQ7rgp8iHuJS57M.ceA.U8UibnGnlOlhHkcRO/x90wy1U9i', 93248383, 'test', 'tenant', '["uploads\\\\1776840737093.png"]', 'pending', 0, '2026-04-22'),
-	(26, 'Bob', 'Brown', 'bb@mail.com', '$2b$10$wpz0JzEQ7rgp8iHuJS57M.ceA.U8UibnGnlOlhHkcRO/x90wy1U9i', 93248383, 'test', 'manager', '["uploads\\\\1776840737093.png"]', 'rejected', 0, '2026-04-22'),
-	(27, 'Eve', 'Davis', 'eve@mail.com', '$2b$10$wpz0JzEQ7rgp8iHuJS57M.ceA.U8UibnGnlOlhHkcRO/x90wy1U9i', 93248383, 'test', 'tenant', '["uploads\\\\1776840737093.png"]', 'pending', 0, '2026-04-22'),
-	(28, 'Jack', 'Anderson', 'jand@gmail.com', '$2b$10$Dj/E9EhH82Tl0YmfuGebi.yC4H0tN/bGEjTA0Ucr5qlBd.iUn/FXm', 93248383, 'test', 'tenant', '["uploads\\\\1776840737093.png"]', 'rejected', 0, '2026-04-22'),
-	(29, 'sdfasdfsad', 'fasdfsadf', 'myman@mail.com', '$2b$10$2LbV2BWDJaL4sXrKWLC7zO4/xNGf8YjQtIbDQwotrHx8BrVyPwcv2', 0, 'sdfasdfsadf', 'tenant', '[]', 'active', 0, '2026-04-30');
+	(23, 'John', 'Doe', 'xdwardd@gmail.com', '$2b$10$Dj/E9EhH82Tl0YmfuGebi.yC4H0tN/bGEjTA0Ucr5qlBd.iUn/FXm', 93248383, 'test', 'tenant', '["uploads\\\\1776840737093.png"]', 'active', 0, '2026-04-22'),
+	(24, 'Admin', 'Super Admin', 'xdwardd@gmail.com2', '$2b$10$Dj/E9EhH82Tl0YmfuGebi.yC4H0tN/bGEjTA0Ucr5qlBd.iUn/FXm', 93248383, 'test', 'admin', '["uploads\\\\1776840737093.png"]', 'active', 0, '2026-04-22'),
+	(32, 'Edward', 'Catapan', 'edwardcatapan@gmail.com', '$2b$10$Dj/E9EhH82Tl0YmfuGebi.yC4H0tN/bGEjTA0Ucr5qlBd.iUn/FXm', 2147483647, 'aesdfasdfsdfa sadfasdf asadfsdf', 'manager', '[]', 'active', 0, '2026-05-05');
+
+-- Dumping structure for procedure test_kyc.updateProperty
+DELIMITER //
+CREATE PROCEDURE `updateProperty`(
+	IN `p_property_id` INT,
+	IN `p_manager_id` INT,
+	IN `p_property_title` VARCHAR(255),
+	IN `p_address` VARCHAR(255),
+	IN `p_property_type` VARCHAR(50),
+	IN `p_monthly_price` DECIMAL(10,2),
+	IN `p_bedrooms` INT,
+	IN `p_bathrooms` INT,
+	IN `p_description` TEXT,
+	IN `p_availability` VARCHAR(20),
+	IN `p_floor_area` VARCHAR(50),
+	IN `p_lot_size` VARCHAR(50),
+	IN `p_year_built` INT,
+	IN `p_amenities` TEXT,
+	IN `p_files` LONGTEXT,
+	IN `p_address_lat` DOUBLE,
+	IN `p_address_long` DOUBLE
+)
+BEGIN
+    UPDATE node_property
+    SET
+        manager_id = p_manager_id,
+        property_title = p_property_title,
+        address = p_address,
+        property_type = p_property_type,
+        monthly_price = p_monthly_price,
+        bedrooms = p_bedrooms,
+        bathrooms = p_bathrooms,
+        description = p_description,
+        availability = p_availability,
+        floor_area = p_floor_area,
+        lot_size = p_lot_size,
+        year_built = p_year_built,
+        amenities = p_amenities,
+        files = p_files,
+        address_lat = p_address_lat,
+        address_long = p_address_long,
+        updated_at = NOW()
+    WHERE id = p_property_id;
+END//
+DELIMITER ;
 
 -- Dumping structure for procedure test_kyc.updateUser
 DELIMITER //
 CREATE PROCEDURE `updateUser`(
 	IN `_id` INT,
+	IN `_firstname` VARCHAR(50),
+	IN `_email` VARCHAR(50),
 	IN `_status` VARCHAR(50)
 )
 BEGIN
-UPDATE node_user SET `status` = _status WHERE id = _id;
+UPDATE node_user SET `status` = _status  WHERE  firstname = _firstname AND email = _email AND id = _id;
 END//
 DELIMITER ;
 

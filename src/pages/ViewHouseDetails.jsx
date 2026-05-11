@@ -32,8 +32,8 @@ import ShowAllPhotos from "../component/ShowAllPhotos";
 
 const ViewHouseDetails = () => {
   const { id } = useParams();
-  const stripe = useStripe();
-  const elements = useElements();
+  // const stripe = useStripe();
+  // const elements = useElements();
 
   const [openLoginModal, setOpenLoginModal] = useState(false);
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -48,8 +48,9 @@ const ViewHouseDetails = () => {
 
   const [clientData, setclientData] = useState({
     property_id: id,
-    tenant_id: loggedUser?.id,
     manager_id: "",
+    manager_email: "",
+    tenant_id: loggedUser?.id,
     fullname: loggedUser?.firstname + " " + loggedUser?.lastname,
     contact_number: loggedUser?.contact_number,
     email: loggedUser?.email,
@@ -73,13 +74,20 @@ const ViewHouseDetails = () => {
     setclientData({ ...clientData, [e.target.name]: e.target.value });
   };
 
-  const insertReservation = async () => {
+  const monthlyPrice = details?.monthly_price; // e.g., $500
+  const reservationAmount = monthlyPrice * 0.7; // 70% of the monthly price
+
+  const insertReservation = async (e) => {
+    e.preventDefault();
+    console.log(clientData);
+
     await axios.post(
       `${import.meta.env.VITE_API_URL}reservation/create_reservation`,
       {
         ...clientData,
-        amount_paid: details?.monthly_price,
+        amount_paid: reservationAmount,
         manager_id: details?.manager_id,
+        manager_email: details?.owner_email,
       },
     );
   };
@@ -94,7 +102,7 @@ const ViewHouseDetails = () => {
     setLoading(true);
     const { data } = await axios.post(
       "http://localhost:3000/create-payment-intent",
-      { amount: details?.monthly_price * 100 }, // Stripe expects amount in cents
+      { amount: reservationAmount * 100 }, // Stripe expects amount in cents
     );
 
     const result = await stripe.confirmCardPayment(data.clientSecret, {
@@ -274,15 +282,23 @@ const ViewHouseDetails = () => {
           {/* RIGHT SIDE (BOOKING CARD) */}
           <div>
             <form
-              onSubmit={payInStripe}
-              className="bg-white p-6 rounded-xl text-gray-700 shadow-lg border border-gray-500 flex flex-col gap-9"
+              onSubmit={insertReservation}
+              // onSubmit={payInStripe}
+              className="bg-white p-6 rounded-xl text-gray-700 shadow-lg border border-gray-500 flex flex-col gap-8"
             >
               <div className="text-2xl  font-semibold">
                 {toCurrency(details?.monthly_price)}
                 <span className="text-sm text-gray-500"> / month</span>
+                <div className="text-xs">
+                  For reservation pay{" "}
+                  <span className="font-bold text-red-500">70%</span> of the
+                  monthly price
+                </div>
               </div>
               <div>
-                <label className="font-medium">Select Move-in Date</label>
+                <label className="font-medium text-sm">
+                  Select Move-in Date
+                </label>
                 <input
                   type="date"
                   name="movein_date"
@@ -291,25 +307,29 @@ const ViewHouseDetails = () => {
                   required
                 />
               </div>
-
-              <input
-                type="number"
-                name="total_occupants"
-                placeholder="Number of occupants"
-                onChange={handleChange}
-                className="w-full border rounded-lg p-3"
-                required
-              />
+              <div>
+                <label className="font-medium text-sm">
+                  Number of Occupants
+                </label>
+                <input
+                  type="number"
+                  name="total_occupants"
+                  placeholder="Number of occupants"
+                  onChange={handleChange}
+                  className="w-full border rounded-lg p-3"
+                  required
+                />
+              </div>
 
               <div className="p-3 border rounded-lg">
-                <CardElement />
+                {/* <CardElement /> */}
               </div>
 
               <button
                 // disabled={!stripe}
                 className="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg font-semibold"
               >
-                Pay Now
+                Reserve Now
               </button>
             </form>
           </div>

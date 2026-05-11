@@ -23,16 +23,18 @@ const ReservationDetails = ({
               <h3 className="card-title text-lg mb-2">
                 {selectedReservation.property_title}
               </h3>
-              <p className="text-gray-600 text-base mb-2">
+              <div className="text-gray-600 text-sm mb-2">
                 Client Name:{" "}
                 <span className="font-semibold text-base">
                   {selectedReservation.fullname}
                 </span>
-              </p>
+              </div>
               <div className="flex gap-2 items-center flex-wrap text-xs text-gray-600">
-                <span>{selectedReservation.movein_date}</span>
                 <span className={" text-xs bg-green-600 py-1 px-4 text-white "}>
                   {selectedReservation.payment_status.toUpperCase()}
+                </span>
+                <span className="text-xs bg-gray-200 py-1 px-4">
+                  {toCurrency(selectedReservation.amount_paid)}
                 </span>
               </div>
             </div>

@@ -16,19 +16,6 @@ const PropertyList = ({ properties, setProperties, setShowForm }) => {
 
   const navigate = useNavigate();
 
-  const filteredProperties = properties.filter((prop) => {
-    if (filter === "all") return true;
-    return prop.availability === filter;
-  });
-
-  const handleDelete = (index) => {
-    if (confirm("Are you sure you want to delete this property?")) {
-      const newProps = [...properties];
-      newProps.splice(index, 1);
-      setProperties(newProps);
-    }
-  };
-
   const handlePropertyClick = (id) => {
     //Navigate to the house details page with the selected house ID
     navigate(`/viewHouseDetails/${id}`);

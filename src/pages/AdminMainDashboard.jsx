@@ -104,14 +104,18 @@ const AdminMainDashboard = () => {
   );
 
   // Function to update manager status without closing the modal
-  const updateUserStatus = async (id, newStatus) => {
+  const updateUserStatus = async (id, firstname, email, newStatus) => {
     console.log(newStatus);
 
     try {
       setLoading(true);
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}user/update/${id}`,
-        { status: newStatus },
+        {
+          firstname: firstname,
+          email: email,
+          status: newStatus,
+        },
       );
 
       if (response.data.success === true) {
@@ -384,14 +388,26 @@ const AdminMainDashboard = () => {
               {selectedUser.status === "pending" && (
                 <div className="mt-6 flex justify-between gap-1">
                   <button
-                    onClick={() => updateUserStatus(selectedUser.id, "active")}
+                    onClick={() =>
+                      updateUserStatus(
+                        selectedUser.id,
+                        selectedUser.firstname,
+                        selectedUser.email,
+                        "active",
+                      )
+                    }
                     className="w-full py-2 bg-green-500 text-white hover:bg-green-600 transition-all duration-300"
                   >
                     Approve
                   </button>
                   <button
                     onClick={() =>
-                      updateUserStatus(selectedUser.id, "rejected")
+                      updateUserStatus(
+                        selectedUser.id,
+                        selectedUser.firstname,
+                        selectedUser.email,
+                        "rejected",
+                      )
                     }
                     className="w-full py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300"
                   >

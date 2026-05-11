@@ -3,11 +3,11 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+// import { loadStripe } from "@stripe/stripe-js";
 import TestStripe from "./pages/TestStripe.jsx";
 import { ToastContainer } from "react-toastify";
 import HouseForm from "./HouseForm.jsx";
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_SECRET_KEY); // Your Stripe public key
+// const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_SECRET_KEY); // Your Stripe public key
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -21,9 +21,9 @@ createRoot(document.getElementById("root")).render(
       pauseOnHover={false}
       theme="colored"
     />
-    <Elements stripe={stripePromise}>
-      <App />
-    </Elements>
+    {/* <Elements stripe={stripePromise}> */}
+    <App />
+    {/* </Elements> */}
   </StrictMode>,
 );
 

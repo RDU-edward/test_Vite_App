@@ -25,7 +25,7 @@ function ManagerDashboard() {
 
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const reservationsPerPage = 2;
+  const reservationsPerPage = 4;
 
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
